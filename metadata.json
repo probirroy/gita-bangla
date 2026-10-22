@@ -1,0 +1,6 @@
+{
+  "name": "Gita Bangla",
+  "description": "শ্রীমদ্ভগবদ্গীতা বাংলা (Bhagavad Gita in Bengali) with verse recitation, search, bookmarks, reflections, and multi-device sync.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
