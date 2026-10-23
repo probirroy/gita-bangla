@@ -539,6 +539,48 @@ class ExampleUnitTest {
             assertTrue(transAudio.contains(v.translationBengali))
         }
     }
+
+    @Test
+    fun verifyVerseJournalReflectionAndNotesFormatting() {
+        val verse = GitaContentProvider.getVerse(2, 47)
+        val note = com.example.data.model.VerseNote(
+            id = 1L,
+            chapterNumber = 2,
+            verseNumber = 47,
+            noteText = "ফলের আশা ত্যাগ করে নিষ্ঠার সাথে নিজের দায়িত্ব পালন করাই শ্রেষ্ঠ সাধনা। #কর্মযোগ #শান্তি",
+            createdAt = System.currentTimeMillis(),
+            updatedAt = System.currentTimeMillis()
+        )
+
+        assertEquals(2, note.chapterNumber)
+        assertEquals(47, note.verseNumber)
+        assertTrue(note.noteText.contains("#কর্মযোগ"))
+        assertTrue(note.noteText.contains("#শান্তি"))
+
+        val charCount = note.noteText.trim().length
+        val wordCount = note.noteText.trim().split(Regex("\\s+")).size
+        assertTrue(charCount > 30)
+        assertTrue(wordCount >= 10)
+
+        // Bengali number conversion check
+        val charCountBn = com.example.util.BengaliNumberHelper.toBengali(charCount)
+        val wordCountBn = com.example.util.BengaliNumberHelper.toBengali(wordCount)
+        assertTrue(charCountBn.isNotBlank())
+        assertTrue(wordCountBn.isNotBlank())
+
+        // NoteEntity conversion and roundtrip
+        val entity = com.example.data.local.NoteEntity(
+            id = note.id,
+            chapterNumber = note.chapterNumber,
+            verseNumber = note.verseNumber,
+            noteText = note.noteText,
+            createdAt = note.createdAt,
+            updatedAt = note.updatedAt
+        )
+        assertEquals(note.noteText, entity.noteText)
+        assertEquals(note.chapterNumber, entity.chapterNumber)
+        assertEquals(note.verseNumber, entity.verseNumber)
+    }
 }
 
 

@@ -398,6 +398,16 @@ class GitaViewModel(application: Application) : AndroidViewModel(application) {
         _noteEditorState.value = _noteEditorState.value.copy(isOpen = false)
     }
 
+    fun saveVerseNote(chapterNumber: Int, verseNumber: Int, noteText: String) {
+        viewModelScope.launch {
+            if (noteText.isBlank()) {
+                repository.deleteNote(chapterNumber, verseNumber)
+            } else {
+                repository.saveNote(chapterNumber, verseNumber, noteText.trim())
+            }
+        }
+    }
+
     fun deleteNote(chapterNumber: Int, verseNumber: Int) {
         viewModelScope.launch {
             repository.deleteNote(chapterNumber, verseNumber)

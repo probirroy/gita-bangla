@@ -88,6 +88,7 @@ import com.example.audio.RecitationMode
 import com.example.ui.components.GitaAudioPlayerCard
 import com.example.ui.components.MediaPlaybackController
 import com.example.ui.components.VerseAudioPlayer
+import com.example.ui.components.VerseJournalComponent
 import com.example.ui.viewmodel.AppScreen
 import com.example.ui.viewmodel.GitaViewModel
 import com.example.util.HapticHelper
@@ -554,171 +555,18 @@ fun VerseReaderScreen(
                     isCompact = false
                 )
 
-                // Personal Reflections / Note Section (Room Database)
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("verse_reflection_card"),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = if (currentNote != null && currentNote.noteText.isNotBlank())
-                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
-                        else
-                            MaterialTheme.colorScheme.surface
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .clip(CircleShape)
-                                        .background(MaterialTheme.colorScheme.primaryContainer),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.EditNote,
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(18.dp)
-                                    )
-                                }
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Column {
-                                    Text(
-                                        text = "ব্যক্তিগত চিন্তন ও উপলব্ধি",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onSurface
-                                    )
-                                    Text(
-                                        text = "Room Database-এ স্থায়ীভাবে সংরক্ষিত",
-                                        fontSize = 10.sp,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                }
-                            }
-
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (currentNote != null && currentNote.noteText.isNotBlank()) {
-                                    // Share Reflection
-                                    IconButton(
-                                        onClick = {
-                                            HapticHelper.performClick(null)
-                                            ShareHelper.shareVerseWithReflection(context, verse, currentNote.noteText)
-                                        },
-                                        modifier = Modifier
-                                            .size(32.dp)
-                                            .testTag("share_verse_reflection_button")
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Share,
-                                            contentDescription = "চিন্তন শেয়ার করুন",
-                                            tint = MaterialTheme.colorScheme.primary,
-                                            modifier = Modifier.size(17.dp)
-                                        )
-                                    }
-
-                                    // Delete Note
-                                    IconButton(
-                                        onClick = {
-                                            HapticHelper.performSuccess(context)
-                                            viewModel.deleteNote(verse.chapterNumber, verse.verseNumber)
-                                        },
-                                        modifier = Modifier
-                                            .size(32.dp)
-                                            .testTag("delete_verse_reflection_button")
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Default.Delete,
-                                            contentDescription = "নোট মুছুন",
-                                            tint = MaterialTheme.colorScheme.error.copy(alpha = 0.7f),
-                                            modifier = Modifier.size(17.dp)
-                                        )
-                                    }
-                                }
-
-                                // Edit / Add Note
-                                IconButton(
-                                    onClick = {
-                                        HapticHelper.performClick(null)
-                                        viewModel.openNoteEditor(verse.chapterNumber, verse.verseNumber)
-                                    },
-                                    modifier = Modifier
-                                        .size(32.dp)
-                                        .testTag("add_note_button")
-                                        .testTag("edit_verse_reflection_button")
-                                ) {
-                                    Icon(
-                                        imageVector = if (currentNote != null && currentNote.noteText.isNotBlank()) Icons.Default.Edit else Icons.Default.EditNote,
-                                        contentDescription = "নোট লিখুন বা সম্পাদনা করুন",
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(19.dp)
-                                    )
-                                }
-                            }
-                        }
-
-                        if (currentNote != null && currentNote.noteText.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Surface(
-                                color = MaterialTheme.colorScheme.surface,
-                                shape = RoundedCornerShape(12.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Column(modifier = Modifier.padding(14.dp)) {
-                                    Text(
-                                        text = currentNote.noteText,
-                                        fontSize = 14.sp,
-                                        lineHeight = 22.sp,
-                                        fontWeight = FontWeight.Normal,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        modifier = Modifier.testTag("verse_reflection_text")
-                                    )
-                                }
-                            }
-                        } else {
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "এই শ্লোকের ওপর এখনো কোনো ব্যক্তিগত নোট লেখা হয়নি। আপনার অন্তর্দৃষ্টি, প্রার্থনা বা সংকল্প লিখে সংরক্ষণ করুন।",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.8f),
-                                lineHeight = 18.sp
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            FilledTonalButton(
-                                onClick = {
-                                    HapticHelper.performClick(null)
-                                    viewModel.openNoteEditor(verse.chapterNumber, verse.verseNumber)
-                                },
-                                shape = RoundedCornerShape(10.dp),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .testTag("add_verse_reflection_button")
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.EditNote,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "ব্যক্তিগত চিন্তন যোগ করুন",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp
-                                )
-                            }
-                        }
-                    }
-                }
+                // Dedicated Verse Journal Component (Room Database Persistence)
+                VerseJournalComponent(
+                    verse = verse,
+                    currentNote = currentNote,
+                    onSaveNote = { noteText ->
+                        viewModel.saveVerseNote(verse.chapterNumber, verse.verseNumber, noteText)
+                    },
+                    onDeleteNote = {
+                        viewModel.deleteNote(verse.chapterNumber, verse.verseNumber)
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
 
             // Bottom Navigation Controls: Previous / Next Verse
