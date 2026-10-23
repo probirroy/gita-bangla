@@ -86,7 +86,8 @@ fun DailyVerseComponent(
     val context = LocalContext.current
     val curatedDailyVerse by viewModel.curatedDailyVerse.collectAsState()
     val dailyVerse = curatedDailyVerse.verse
-    val progress by viewModel.todayProgress.collectAsState()
+    val progress by viewModel.readingProgress.collectAsState()
+    val allChapterProgress by viewModel.allChapterProgress.collectAsState()
     val bookmarks by viewModel.bookmarks.collectAsState()
     val notes by viewModel.notes.collectAsState()
 
@@ -96,7 +97,9 @@ fun DailyVerseComponent(
     val isPlaying = playingVerseId == dailyVerse.verseId && playbackState == PlaybackState.PLAYING
     val isDailyBookmarked = bookmarks.any { it.chapterNumber == dailyVerse.chapterNumber && it.verseNumber == dailyVerse.verseNumber }
     val dailyNote = notes.find { it.chapterNumber == dailyVerse.chapterNumber && it.verseNumber == dailyVerse.verseNumber }
-    val isDailyVerseRead = progress.isVerseRead(dailyVerse.chapterNumber, dailyVerse.verseNumber)
+    val progressMap = allChapterProgress.associateBy { it.chapterNumber }
+    val isDailyVerseRead = progressMap[dailyVerse.chapterNumber]?.readVersesSet?.contains(dailyVerse.verseNumber) == true ||
+            progress.todayVersesRead.split(",").contains("${dailyVerse.chapterNumber}.${dailyVerse.verseNumber}")
 
     var showWisdomDetails by remember { mutableStateOf(true) }
 
@@ -631,14 +634,13 @@ fun DailyVerseComponent(
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Expandable Audio Player Component when Audio is Active
+            // Expandable Media Playback Controller Component when Audio is Active
             if (playingVerseId == dailyVerse.verseId && playbackState != PlaybackState.IDLE) {
-                VerseAudioPlayer(
+                MediaPlaybackController(
                     verse = dailyVerse,
                     audioStateManager = viewModel.audioStateManager,
-                    isCompact = true,
-                    showVerseInfo = false,
-                    showModeSelector = true,
+                    showVerseHeader = false,
+                    showRecitationModes = true,
                     modifier = Modifier
                         .fillMaxWidth()
                         .testTag("daily_verse_seek_slider")

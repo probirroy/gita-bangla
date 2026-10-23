@@ -242,6 +242,21 @@ class ExampleRobolectricTest {
     viewModel.dismissShareVerseDialog()
     org.junit.Assert.assertNull(viewModel.verseToShare.value)
   }
+
+  @Test
+  fun `verify curated daily verse feature in ViewModel`() {
+    val application = ApplicationProvider.getApplicationContext<android.app.Application>()
+    val viewModel = com.example.ui.viewmodel.GitaViewModel(application)
+
+    val curated = viewModel.curatedDailyVerse.value
+    org.junit.Assert.assertNotNull(curated)
+    org.junit.Assert.assertTrue(curated.verse.chapterNumber in 1..18)
+    org.junit.Assert.assertTrue(curated.verse.pronunciationBengali.isNotBlank())
+    org.junit.Assert.assertTrue(curated.verse.translationBengali.isNotBlank())
+    org.junit.Assert.assertTrue(curated.dailyWisdomBengali.isNotBlank())
+    org.junit.Assert.assertTrue(curated.dailyPracticeBengali.isNotBlank())
+    org.junit.Assert.assertTrue(curated.dateDisplayBengali.isNotBlank())
+  }
 }
 
 

@@ -17,6 +17,7 @@ import com.example.data.model.UserReadingSettings
 import com.example.data.model.Verse
 import com.example.data.model.VerseNote
 import com.example.data.model.WeeklyInsightsSummary
+import com.example.data.source.DailyVerseProvider
 import com.example.data.source.GitaContentProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow

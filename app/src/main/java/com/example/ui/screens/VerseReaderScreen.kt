@@ -86,6 +86,7 @@ import androidx.compose.ui.unit.sp
 import com.example.audio.PlaybackState
 import com.example.audio.RecitationMode
 import com.example.ui.components.GitaAudioPlayerCard
+import com.example.ui.components.MediaPlaybackController
 import com.example.ui.components.VerseAudioPlayer
 import com.example.ui.viewmodel.AppScreen
 import com.example.ui.viewmodel.GitaViewModel
@@ -363,15 +364,16 @@ fun VerseReaderScreen(
                     .padding(horizontal = 20.dp, vertical = 14.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // --- VERSE AUDIO PLAYER COMPONENT (AUDIO STATE MANAGER INTEGRATED) ---
-                VerseAudioPlayer(
+                // --- MEDIA PLAYBACK CONTROLLER (AUDIO STATE MANAGER INTEGRATED) ---
+                MediaPlaybackController(
                     verse = verse,
                     audioStateManager = viewModel.audioStateManager,
-                    isCompact = false,
-                    showVerseInfo = false,
-                    showModeSelector = true,
+                    showVerseHeader = false,
+                    showRecitationModes = true,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .testTag("media_playback_controller")
+                        .testTag("verse_audio_player")
                         .testTag("bengali_audio_recitation_panel")
                 )
 

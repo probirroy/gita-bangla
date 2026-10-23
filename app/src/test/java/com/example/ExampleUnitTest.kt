@@ -392,6 +392,153 @@ class ExampleUnitTest {
         assertTrue(shareText.contains("কর্মেই তোমার একমাত্র অধিকার"))
         assertTrue(shareText.contains("— শ্রীমদ্ভগবদ্গীতা বাংলা"))
     }
+
+    @Test
+    fun verifyDailyVerseProviderCuratedVerses() {
+        val curated = com.example.data.source.DailyVerseProvider.getCuratedDailyVerseForDay(100)
+        assertNotNull(curated)
+        assertTrue(curated.verse.chapterNumber in 1..18)
+        assertTrue(curated.themeCategory.isNotEmpty())
+        assertTrue(curated.inspirationQuote.isNotEmpty())
+        assertTrue(curated.dailyWisdomBengali.isNotEmpty())
+        assertTrue(curated.dailyPracticeBengali.isNotEmpty())
+
+        val digitString = com.example.data.source.DailyVerseProvider.toBengaliDigits(2026)
+        assertEquals("২০২৬", digitString)
+        val digitSingle = com.example.data.source.DailyVerseProvider.toBengaliDigits(7)
+        assertEquals("৭", digitSingle)
+    }
+
+    @Test
+    fun verifyMediaPlaybackControllerTimingAndFormat() {
+        assertEquals("00:00", com.example.ui.components.formatAudioTime(0f))
+        assertEquals("00:05", com.example.ui.components.formatAudioTime(5f))
+        assertEquals("01:15", com.example.ui.components.formatAudioTime(75.8f))
+        assertEquals("10:00", com.example.ui.components.formatAudioTime(600f))
+    }
+
+    @Test
+    fun verifyBengaliNumberHelper() {
+        assertEquals("৪৭", com.example.util.BengaliNumberHelper.toBengali(47))
+        assertEquals("২", com.example.util.BengaliNumberHelper.toBengali(2))
+        assertEquals("১০০", com.example.util.BengaliNumberHelper.toBengali(100L))
+        assertEquals("2.47", com.example.util.BengaliNumberHelper.normalizeBengaliToAscii("২.৪৭"))
+        assertEquals("অধ্যায় 2 শ্লোক 47", com.example.util.BengaliNumberHelper.normalizeBengaliToAscii("অধ্যায় ২ শ্লোক ৪৭"))
+    }
+
+    @Test
+    fun verifySearchByChapterAndVerseNumber() {
+        // Bengali digits separated by dot
+        val resultsBn = GitaContentProvider.searchVerses("২.৪৭")
+        assertTrue("Expected 2.47 to be found", resultsBn.any { it.chapterNumber == 2 && it.verseNumber == 47 })
+
+        // English digits separated by dot
+        val resultsEn = GitaContentProvider.searchVerses("2.47")
+        assertTrue("Expected 2.47 to be found", resultsEn.any { it.chapterNumber == 2 && it.verseNumber == 47 })
+
+        // Bengali digits with colon
+        val resultsColon = GitaContentProvider.searchVerses("২:৪৭")
+        assertTrue("Expected 2:47 to be found", resultsColon.any { it.chapterNumber == 2 && it.verseNumber == 47 })
+
+        // Natural Bengali text: "অধ্যায় ২ শ্লোক ৪৭"
+        val resultsText = GitaContentProvider.searchVerses("অধ্যায় ২ শ্লোক ৪৭")
+        assertTrue("Expected verse from 'অধ্যায় ২ শ্লোক ৪৭'", resultsText.any { it.chapterNumber == 2 && it.verseNumber == 47 })
+
+        // Another chapter/verse: 4.7 (Yada yada hi dharmasya)
+        val results47 = GitaContentProvider.searchVerses("৪.৭")
+        assertTrue("Expected 4.7 to be found", results47.any { it.chapterNumber == 4 && it.verseNumber == 7 })
+
+        // Textual: "অধ্যায় ৪ শ্লোক ৭"
+        val results47Text = GitaContentProvider.searchVerses("অধ্যায় ৪ শ্লোক ৭")
+        assertTrue("Expected 4.7 from text query", results47Text.any { it.chapterNumber == 4 && it.verseNumber == 7 })
+    }
+
+    @Test
+    fun verifySearchByChapterNumberOnly() {
+        val resultsCh2 = GitaContentProvider.searchVerses("অধ্যায় ২")
+        assertTrue(resultsCh2.isNotEmpty())
+        assertTrue("All results should belong to chapter 2", resultsCh2.all { it.chapterNumber == 2 })
+
+        val resultsCh12 = GitaContentProvider.searchVerses("অধ্যায় ১২")
+        assertTrue(resultsCh12.isNotEmpty())
+        assertTrue(resultsCh12.any { it.chapterNumber == 12 })
+    }
+
+    @Test
+    fun verifySearchByVerseNumberOnly() {
+        val resultsV47 = GitaContentProvider.searchVerses("শ্লোক ৪৭")
+        assertTrue(resultsV47.isNotEmpty())
+        assertTrue("Results should have verseNumber 47", resultsV47.all { it.verseNumber == 47 })
+        assertTrue("Should include Chapter 2 verse 47", resultsV47.any { it.chapterNumber == 2 && it.verseNumber == 47 })
+
+        val resultsNumber47 = GitaContentProvider.searchVerses("৪৭")
+        assertTrue(resultsNumber47.isNotEmpty())
+        assertTrue("Results should have verseNumber 47", resultsNumber47.any { it.verseNumber == 47 })
+    }
+
+    @Test
+    fun verifySearchByBengaliKeywords() {
+        // Keyword: কর্ম
+        val karmaResults = GitaContentProvider.searchVerses("কর্ম")
+        assertTrue("Karma search should return verses", karmaResults.isNotEmpty())
+        assertTrue(karmaResults.any { it.chapterNumber == 2 && it.verseNumber == 47 })
+
+        // Keyword: ভক্তি
+        val bhaktiResults = GitaContentProvider.searchVerses("ভক্তি")
+        assertTrue("Bhakti search should return verses", bhaktiResults.isNotEmpty())
+        assertTrue(bhaktiResults.any { it.chapterNumber == 9 || it.chapterNumber == 12 || it.chapterNumber == 18 })
+
+        // Keyword: আত্মা
+        val atmaResults = GitaContentProvider.searchVerses("আত্মা")
+        assertTrue("Atma search should return verses", atmaResults.isNotEmpty())
+        assertTrue(atmaResults.any { it.chapterNumber == 2 && it.verseNumber == 20 })
+
+        // Keyword: ক্রোধ
+        val krodhaResults = GitaContentProvider.searchVerses("ক্রোধ")
+        assertTrue("Krodha search should return verses", krodhaResults.isNotEmpty())
+        assertTrue(krodhaResults.any { it.chapterNumber == 2 && (it.verseNumber == 62 || it.verseNumber == 63) })
+
+        // Keyword: ধ্যান
+        val dhyanResults = GitaContentProvider.searchVerses("ধ্যান")
+        assertTrue("Dhyan search should return verses", dhyanResults.isNotEmpty())
+        assertTrue(dhyanResults.any { it.chapterNumber == 6 })
+    }
+
+    @Test
+    fun verifyAll18ChaptersHaveCompleteVerses() {
+        for (chapter in GitaContentProvider.chapters) {
+            val verses = GitaContentProvider.getAllVersesForChapter(chapter.number)
+            assertEquals("Chapter ${chapter.number} must contain ${chapter.verseCount} verses", chapter.verseCount, verses.size)
+
+            for (verse in verses) {
+                assertEquals(chapter.number, verse.chapterNumber)
+                assertTrue("Shloka Sanskrit must not be blank", verse.shlokaSanskrit.isNotBlank())
+                assertTrue("Pronunciation Bengali must not be blank", verse.pronunciationBengali.isNotBlank())
+                assertTrue("Translation Bengali must not be blank", verse.translationBengali.isNotBlank())
+                assertTrue("Purport Bengali must not be blank", verse.purportBengali.isNotBlank())
+            }
+        }
+    }
+
+    @Test
+    fun verifyAudioRecitationTextGenerationForEveryMode() {
+        val verse1 = GitaContentProvider.getVerse(1, 1)
+        val verse247 = GitaContentProvider.getVerse(2, 47)
+        val verse1866 = GitaContentProvider.getVerse(18, 66)
+
+        val testVerses = listOf(verse1, verse247, verse1866)
+        for (v in testVerses) {
+            val shlokaAudio = "${v.pronunciationBengali} ... ইতি শ্রীমদ্ভগবদ্গীতা।"
+            val transAudio = "অধ্যায় ${v.chapterNumber}, শ্লোক ${v.verseNumber} এর সরল বঙ্গানুবাদ: ${v.translationBengali}"
+            val bothAudio = "${v.pronunciationBengali} ... সরল বঙ্গানুবাদ: ${v.translationBengali}"
+
+            assertTrue(shlokaAudio.isNotBlank())
+            assertTrue(transAudio.isNotBlank())
+            assertTrue(bothAudio.isNotBlank())
+            assertTrue(shlokaAudio.contains(v.pronunciationBengali))
+            assertTrue(transAudio.contains(v.translationBengali))
+        }
+    }
 }
 
 

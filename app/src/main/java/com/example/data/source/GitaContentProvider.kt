@@ -152,235 +152,18 @@ object GitaContentProvider {
         )
     )
 
-    private val specialVerses: Map<String, Verse> = mapOf(
-        "1.1" to Verse(
-            chapterNumber = 1,
-            verseNumber = 1,
-            shlokaSanskrit = "धृतराष्ट्र उवाच |\nधर्मक्षेत्रे कुरुक्षेत्रे समवेता युयुत्सवः |\nमामकाः पाण्डवाश्चैव किमकुर्वत सञ्जय ||१-१||",
-            pronunciationBengali = "ধৃতরাষ্ট্র উবাচ -\nধর্মক্ষেত্রে কুরুক্ষেত্রে সমবেতা যুযুৎসবঃ।\nমামকাঃ পাণ্ডবাশ্চৈব কিমকুর্বত সঞ্জয়॥",
-            translationBengali = "ধৃতরাষ্ট্র বললেন—হে সঞ্জয়! পুণ্যভূমি কুরুক্ষেত্রে যুদ্ধাভিলাষী হয়ে সমবেত আমার পুত্রগণ এবং পাণ্ডুপুত্রগণ সেখানে কী করল?",
-            purportBengali = "গীতার প্রারম্ভে অন্ধ রাজা ধৃতরাষ্ট্রের অন্তরের পক্ষপাতিত্ব ও ভয় ফুটে উঠেছে। ধর্মক্ষেত্রের প্রভাবে অধার্মিক দুর্যোধনদের কী পরিণতি হতে পারে, সেই শঙ্কায় সঞ্জয়ের কাছে রণক্ষেত্রের বিবরণ জানতে চান।"
-        ),
-        "1.47" to Verse(
-            chapterNumber = 1,
-            verseNumber = 47,
-            shlokaSanskrit = "सञ्जय उवाच |\nएवमुक्त्वार्जुनः सङ्ख्ये रथोपस्थ उपाविशत् |\nविसृज्य सशरं चापं शोकसंविग्नमानसः ||१-४७||",
-            pronunciationBengali = "সঞ্জয় উবাচ -\nএবমুক্ত্বার্জুনঃ সংখ্যে রথোপস্থ উপাবিশৎ।\nবিসৃজ্য সশরং চাপং শোকসংবিগ্নমানসঃ॥",
-            translationBengali = "সঞ্জয় বললেন—যুদ্ধক্ষেত্রে এই কথা বলে অর্জুন শোকে বিহ্বল হয়ে ধনুর্বাণ পরিত্যাগপূর্বক রথের উপর বসে পড়লেন।",
-            purportBengali = "অর্জুনের তীব্র মোহ ও শোকের চরম অভিব্যক্তি। যখন মানুষ ইন্দ্রিয়গত মমতা ও মোহে বিভ্রান্ত হয়, তখন সে স্বধর্ম বিস্মৃত হয়। তখনই শ্রীকৃষ্ণের অমর ভগবৎ বাণীর প্রয়োজন হয়।"
-        ),
-        "2.7" to Verse(
-            chapterNumber = 2,
-            verseNumber = 7,
-            shlokaSanskrit = "कार्पण्यदोषोपहतस्वभावः\nपृच्छामि त्वां धर्मसंमूढचेताः |\nयच्छ्रेयः स्यान्निश्चितं ब्रूहि तन्मे\nशिष्यस्तेऽहं शाधि मां त्वां प्रपन्नम् ||२-७||",
-            pronunciationBengali = "কার্পণ্যদোষোপহতস্বভাবঃ\nপৃচ্ছামি ত্বাং ধর্মসংমূঢ়চেতাঃ।\nযচ্ছ্রেয়ঃ স্যান্নিশ্চিতং ব্রূহি তন্মো\nশিষ্যস্তেইহং শাধি মাং ত্বাং প্রপন্নম্॥",
-            translationBengali = "কাতরতাদোষে আমার স্বাভাবিক তেজ বিনষ্ট হয়েছে, কর্তব্যের বিষয়ে আমার বুদ্ধি মোহগ্রস্ত। যা আমার পক্ষে পরম শ্রেয়ঙ্কর, তা আমাকে নিশ্চিতভাবে বলুন। আমি আপনার শিষ্য, আপনার শরণাগত, আমাকে শিক্ষা দিন।",
-            purportBengali = "এখানে অর্জুন একজন সাধারণ সখার স্থান অতিক্রম করে নিজেকে শ্রীকৃষ্ণের একান্ত অনুগত শিষ্য হিসেবে সমর্পণ করলেন। আত্মজ্ঞান লাভের প্রথম শর্ত হল সদ্গুরুর চরণে পূর্ণ আত্মসমর্পণ।"
-        ),
-        "2.14" to Verse(
-            chapterNumber = 2,
-            verseNumber = 14,
-            shlokaSanskrit = "मात्रास्पर्शास्तु कौन्तेय शीतोष्णसुखदुःखदाः |\nआगमापायिनोऽनित्यास्तांस्तितिक्षस्व भारत ||२-१४||",
-            pronunciationBengali = "মাত্রাস্পর্শাস্তু কৌন্তেয় শীতোষ্ণসুখদুঃখদাঃ।\nআগমাপায়িনোহনিত্যাস্তাংস্তিতিক্ষস্ব ভারত॥",
-            translationBengali = "হে কৌন্তেয়! ইন্দ্রিয় ও বিষয়ের সংযোগে শীত-উষ্ণ এবং সুখ-দুঃখের উৎপত্তি হয়। সেগুলি অনিত্য এবং উৎপত্তি ও বিনাশশীল। অতএব হে ভারত, তুমি সেগুলি ধৈর্যসহকারে সহ্য করো।",
-            purportBengali = "সুখ ও দুঃখ কুয়াশার মতো আসে এবং মিলিয়ে যায়। প্রজ্ঞাবান ব্যক্তি পার্থিব উত্থান-পতনে বিচলিত না হয়ে আত্মস্থ থাকার শক্তি অর্জন করেন।"
-        ),
-        "2.20" to Verse(
-            chapterNumber = 2,
-            verseNumber = 20,
-            shlokaSanskrit = "न जायते म्रियते वा कदाचि-\nन्नायं भूत्वा भविता वा न भूयः |\nअजो नित्यः शाश्वतोऽयं पुराणो\nन हन्यते हन्यमाने शरीरे ||२-२०||",
-            pronunciationBengali = "ন জায়তে ম্রিয়তে বা কদাচি-\nন্নায়ং ভূত্বা ভবিতা বা ন ভূয়ঃ।\nঅজো নিত্যঃ শাশ্বতোহয়ং পুরাণো\nন হন্যতে হন্যমানে শরীরে॥",
-            translationBengali = "আত্মার কখনো জন্ম হয় না, মৃত্যুও হয় না; আত্মা পূর্বে ছিলেন না, এখন আছেন, ভবিষ্যতে থাকবেন না—এমন নয়। আত্মা জন্মরহিত, নিত্য, শাশ্বত ও সনাতন। শরীর বিনষ্ট হলেও আত্মা বিনষ্ট হয় না।",
-            purportBengali = "গীতার অন্যতম শ্রেষ্ঠ আত্মতত্ত্ব। আত্মা অবিনাশী পরম জ্যোতি। মৃত্যু কেবল বহিরাবরণ দেহের রূপান্তর মাত্র, আত্মশক্তির কোনো বিনাশ নেই।"
-        ),
-        "2.22" to Verse(
-            chapterNumber = 2,
-            verseNumber = 22,
-            shlokaSanskrit = "वासांसि जीर्णानि यथा विहाय\nनवानि गृह्णाति नरोऽपराणि |\nतथा शरीराणि विहाय जीर्णा-\nन्यन्यानि संयाति नवानि देही ||२-२२||",
-            pronunciationBengali = "বাসাংসি জীর্ণানি যথা বিহায়\nনবানি গৃহ্ণাতি নরোহপরাণি।\nতথা শরীরানি বিহায় জীর্ণা-\nন্যন্যানি সংয়াতি নবানি দেহী॥",
-            translationBengali = "মানুষ যেমন জীর্ণ বস্ত্র পরিত্যাগ করে নতুন বস্ত্র গ্রহণ করে, ঠিক তেমনি অবিনাশী আত্মা জীর্ণ শরীর পরিত্যাগ করে অন্য নতুন দেহ গ্রহণ করে।",
-            purportBengali = "পুনর্জন্মের অনবদ্য রূপক। দেহের জন্ম-মৃত্যু শুধুমাত্র পোশাক বদলের মতো সহজ স্বাভাবিক ঘটনা। এই বোধ জাগরিত হলে মানুষের মৃত্যুভয় চিরতরে তিরোহিত হয়।"
-        ),
-        "2.47" to Verse(
-            chapterNumber = 2,
-            verseNumber = 47,
-            shlokaSanskrit = "कर्मण्येवाधिकारस्ते मा फलेषु कदाचन |\nमा कर्मफलहेतुर्भूर्मा ते सङ्गोऽस्त्वकर्मणि ||२-४७||",
-            pronunciationBengali = "কর্মণ্যেবাধিকারস্তে মা ফলেষু কদাচন।\nমা কর্মফলহেতুর্ভূর্মা তে সঙ্গোহস্ত্বকৰ্মণি॥",
-            translationBengali = "কর্মেই তোমার একমাত্র অধিকার, কিন্তু ফলের ওপর কখনো নয়। তুমি কখনো কর্মফলের কারণ হয়ো না এবং কর্মত্যাগেও যেন তোমার প্রবৃত্তি না হয়।",
-            purportBengali = "গীতার পরম মন্ত্র। ফলাকাঙ্ক্ষাহীন নিঃস্বার্থ কর্তব্যসাধনই মানুষকে কর্মবন্ধন থেকে মুক্ত করে পরম শান্তির পথ প্রদর্শন করে।"
-        ),
-        "2.62" to Verse(
-            chapterNumber = 2,
-            verseNumber = 62,
-            shlokaSanskrit = "ध्यायतो विषयान्पुंसः सङ्गस्तेषूपजायते |\nसङ्गात्सञ्जायते कामः कामात्क्रोधोऽभिजायते ||२-६२||",
-            pronunciationBengali = "ধ্যায়তো বিষয়ান্ পুংসঃ সঙ্গস্তেষূপজায়তে।\nসঙ্গাৎ সংজায়তে কামঃ কামাৎ ক্রোধোহভিজায়তে॥",
-            translationBengali = "ইন্দ্রিয়বিষয়ে সর্বদা চিন্তা করতে করতে মানুষের তাতে আসক্তি জন্মায়। আসক্তি থেকে কামনার উদয় হয় এবং কামনা অপূর্ণ থাকলে তা থেকে ক্রোধের জন্ম হয়।",
-            purportBengali = "পতনের প্রথম সোপান। অনিয়ন্ত্রিত মন কীভাবে আসক্তির জালে আবদ্ধ হয়ে ক্রোধ ও সর্বনাশের দিকে পরিচালিত করে, শ্রীকৃষ্ণ এখানে তা নিখুঁত মনস্তাত্ত্বিক বিশ্লেষণের মাধ্যমে ব্যাখ্যা করেছেন।"
-        ),
-        "2.63" to Verse(
-            chapterNumber = 2,
-            verseNumber = 63,
-            shlokaSanskrit = "क्रोधाद्भवति संमोहः संमोहात्स्मृतिविभ्रमः |\nस्मृतिभ्रंशाद् बुद्धिनाशो बुद्धिनाशात्प्रणश्यति ||२-६३||",
-            pronunciationBengali = "ক্রোধাদ্ভবতি সংমোহঃ সংমোহাৎ স্মৃতিবিভ্রমঃ।\nস্মৃতিভ্ৰংশাদ্ বুদ্ধিRoot বুদ্ধিনাশাৎ প্রণশ্যতি॥",
-            translationBengali = "ক্রোধ থেকে মোহ উৎপন্ন হয়, মোহ থেকে স্মৃতিশক্তি বিভ্রান্ত হয়, স্মৃতিভ্রম হলে বিবেকবুদ্ধি বিনষ্ট হয় এবং বুদ্ধি নাশ হলে মানুষ সমূলে ধ্বংসপ্রাপ্ত হয়।",
-            purportBengali = "মনোসংযমের চূড়ান্ত সতর্কবাণী। ক্রোধ মানুষের বিবেক ও বিচারশক্তিকে হরণ করে। তাই শান্ত ও একাগ্র মনের সাধনা পরম মুক্তির প্রথম সোপান।"
-        ),
-        "3.8" to Verse(
-            chapterNumber = 3,
-            verseNumber = 8,
-            shlokaSanskrit = "नियतं कुरु कर्म त्वं कर्म ज्यायो ह्यकर्मणः |\nशरीरयात्रापि च ते न प्रसिद्ध्येदकर्मणः ||३-८||",
-            pronunciationBengali = "নিয়তং কুরু কর্ম ত্বং কর্ম জ্যায়ো হ্যকৰ্মণঃ।\nশরীরযাত্রাপি চ তে ন প্রসিদ্ধ্যেদকৰ্মণঃ॥",
-            translationBengali = "তুমি শাস্ত্রনির্দিষ্ট স্বীয় কর্তব্যকর্ম সম্পাদন করো; কারণ কর্মত্যাগ অপেক্ষা কর্মানুষ্ঠান শ্রেষ্ঠ। কর্মহীন হলে তোমার শরীরযাত্রাও নির্বাহ হতে পারে না।",
-            purportBengali = "কর্মহীন অলসতা কখনো ধার্মিকতা হতে পারে না। জীবমাত্রই কর্ম করতে বাধ্য, তাই নিষ্কাম চিত্তে শুভকর্ম সম্পাদনই জীবনের সার্থকতা।"
-        ),
-        "3.21" to Verse(
-            chapterNumber = 3,
-            verseNumber = 21,
-            shlokaSanskrit = "यद्यदाचरति श्रेष्ठस्तत्तदेवेतरो जनः |\nस यत्प्रमाणं कुरुते लोकस्तदनुवर्तते ||३-२१||",
-            pronunciationBengali = "যদ্যদাচরতি শ্রেষ্ঠস্তত্তদেবেতরো জনঃ।\nস যৎপ্রমাণং কুরুতে লোকস্তদনুবর্ততে॥",
-            translationBengali = "শ্রেষ্ঠ ব্যক্তি যা যা আচরণ করেন, সাধারণ মানুষ তারই অনুকরণ করে। তিনি যাকে আদর্শ বলে প্রমাণ করেন, সমগ্র জগৎ তা অনুসরণ করে।",
-            purportBengali = "সমাজনেতা ও আদর্শ ব্যক্তির গুরুদায়িত্ব। তাঁদের প্রতিটি কর্ম লোকশিক্ষার কারণ হয়, তাই সমাজকল্যাণে তাঁদের সতর্ক ও মহৎ আচরণ পালন করা আবশ্যক।"
-        ),
-        "4.7" to Verse(
-            chapterNumber = 4,
-            verseNumber = 7,
-            shlokaSanskrit = "यदा यदा हि धर्मस्य ग्लानिर्भवति भारत |\nअभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम् ||४-७||",
-            pronunciationBengali = "যদা যদা হি ধর্মস্য গ্লানির্ভবতি ভারত।\nঅভ্যুত্থানমধর্মস্য তদাত্মানং সৃজাম্যহম্॥",
-            translationBengali = "হে ভারত! যখনই ধর্মের অবনতি এবং অধর্মের অভ্যুত্থান হয়, তখনই আমি নিজেকে যুগে যুগে অবতীর্ণ করি।",
-            purportBengali = "শ্রীভগবানের অমৃতময় অবতারতত্ত্ব। মানবসমাজ যখন নৈতিক অবক্ষয় ও অধর্মের অন্ধকারে নিমজ্জিত হয়, তখন ভগবান স্বয়ং অবতীর্ণ হয়ে সত্যের আলোক প্রজ্জ্বলিত করেন।"
-        ),
-        "4.8" to Verse(
-            chapterNumber = 4,
-            verseNumber = 8,
-            shlokaSanskrit = "परित्राणाय साधूनां विनाशाय च दुष्कृताम् |\nधर्मसंस्थापनार्थाय संभवामि युगे युगे ||४-८||",
-            pronunciationBengali = "পরিত্রাণায় সাধূনাং বিনাশায় চ দুষ্কৃতাম্।\nধর্মসংস্থাপনার্থায় সম্ভবামি যুগে যুগে॥",
-            translationBengali = "সাধুদের পরিত্রাণ, দুষ্কৃতীদের বিনাশ এবং ধর্ম সুদৃঢ়ভাবে সংস্থাপনের উদ্দেশ্যে আমি যুগে যুগে আবির্ভূত হই।",
-            purportBengali = "সৎলোকের সুরক্ষা এবং অধর্মীদের নিপাত করে পরম সত্য ও বিশ্বপ্রেমকে পুনঃপ্রতিষ্ঠা করাই ভগবানের দিব্য আবির্ভাবের মূল লক্ষ্য।"
-        ),
-        "4.38" to Verse(
-            chapterNumber = 4,
-            verseNumber = 38,
-            shlokaSanskrit = "न हि ज्ञानेन सदृशं पवित्रमिह विद्यते |\nतत्स्वयं योगसंसिद्धः कालेनात्मनि विन्दति ||४-३८||",
-            pronunciationBengali = "ন হি জ্ঞানেন সদৃশং পবিত্রমিহ বিদ্যতে।\nতৎস্বয়ং যোগসংসিদ্ধঃ কালেনাত্মনি বিন্দতি॥",
-            translationBengali = "এই জগতে আত্মজ্ঞানের সমান পবিত্রকারী আর কিছুই নেই। সেই জ্ঞান যোগসিদ্ধ ব্যক্তি যথাকালে নিজের হৃদয়ে স্বয়ং উপলব্ধি করেন।",
-            purportBengali = "ব্রহ্মজ্ঞানের পরম মহিমা। সমস্ত কলুষতা দূর করার চরম ঔষধ হল আত্মজ্ঞান। নিষ্কাম কর্ম ও ধ্যানের দ্বারা চিত্ত শুদ্ধ হলেই অন্তরে এই দিব্য জ্ঞানের স্ফুরণ ঘটে।"
-        ),
-        "6.5" to Verse(
-            chapterNumber = 6,
-            verseNumber = 5,
-            shlokaSanskrit = "उद्धरेदात्मनात्मानं नात्मानमवसादयेत् |\nआत्मैव ह्यात्मनो बन्धुरात्मैव रिपुरात्मनः ||६-५||",
-            pronunciationBengali = "উদ্ধরেদাত্মনাত্মানং নাত্মানমবসাদয়েৎ।\nআত্মৈব হ্যাত্মনো বন্ধুরাত্মৈব রিপুরাত্মনঃ॥",
-            translationBengali = "মনুষ্য নিজের মনের দ্বারাই নিজের উদ্ধার করবে, নিজেকে কখনো অবসাদগ্রস্ত বা অধঃপতিত করবে না; কারণ মনই নিজের প্রকৃত বন্ধু এবং মনই নিজের চরম শত্রু।",
-            purportBengali = "আত্মউন্নয়নের পরম বার্তা। বাহ্যিক কেউ মানুষের ক্ষতি করতে পারে না যদি নিজের মন সংযত থাকে। সংযত মন অমৃতময় মিত্র, কিন্তু অনিয়ন্ত্রিত মন ধ্বংসাত্মক শত্রু।"
-        ),
-        "6.26" to Verse(
-            chapterNumber = 6,
-            verseNumber = 26,
-            shlokaSanskrit = "यतो यतो निश्चरति मनश्चञ्चलमस्थिरम् |\nततस्ततो नियम्यैतदात्मन्येव वशं नयेत् ||६-२६||",
-            pronunciationBengali = "যতো যতো নিশ্চরতি মনশ্চঞ্চলমস্থিরম্।\nততস্ততো নিয়ম্যৈতদাত্মন্যেব বশং নয়েৎ॥",
-            translationBengali = "চঞ্চল ও অস্থির মন যে যে বিষয়ের দিকে ধাবিত হয়, সেখান থেকে তাকে নিবৃত্ত করে পুনরায় আত্মার মধ্যেই সংযত করবে।",
-            purportBengali = "ধ্যানের সুনিপুণ কৌশল। মন বারবার বিষয়বাসনার দিকে ছুটবে, কিন্তু সজাগ বৈরাগ্য ও ধৈর্য দ্বারা তাকে বারবার শ্রীভগবানের পাদপদ্মে ফিরিয়ে আনাই ধ্যানের প্রকৃত অনুশীলন।"
-        ),
-        "7.7" to Verse(
-            chapterNumber = 7,
-            verseNumber = 7,
-            shlokaSanskrit = "मत्तः परतरं नान्यत्किञ्चिदस्ति धनञ्जय |\nमयि सर्वमिदं प्रोतं सूत्रे मणिगणा इव ||७-७||",
-            pronunciationBengali = "মত্তঃ পরতরং নান্যৎ কিঞ্চিদন্তি ধনঞ্জয়।\nময়ি সর্বমিদং প্রোতং সূত্রে মণিগণা ইব॥",
-            translationBengali = "হে ধনঞ্জয়! আমার চেয়ে শ্রেষ্ঠ আর কিছুই নেই। সুতোয় যেমন মণিগুলি গাঁথা থাকে, তেমনই এই সমগ্র বিশ্বব্রহ্মাণ্ড আমাতেই ওতপ্রোতভাবে গাঁথা রয়েছে।",
-            purportBengali = "সর্বব্যাপক পরমেশ্বরের দর্শন। সৃষ্টির দৃশ্যমান বৈচিত্র্যের অন্তরালে এক অদৃশ্য পরম শক্তিরূপ শ্রীকৃষ্ণ বিদ্যমান, যিনি সমগ্র সৃষ্টিকে প্রেম ও শক্তিতে ধরে রেখেছেন।"
-        ),
-        "9.22" to Verse(
-            chapterNumber = 9,
-            verseNumber = 22,
-            shlokaSanskrit = "अनन्याश्चिन्तयन्तो मां ये जनाः पर्युपासते |\nतेषां नित्याभियुक्तानां योगक्षेमं वहाम्यहम् ||९-२२||",
-            pronunciationBengali = "অনন্যাশ্চিন্তয়ন্তো মাং যে জনাঃ পর্যুপাসতে।\nতেষাং নিত্যাভিযুক্তানাং যোগক্ষেমং বহাম্যহম্॥",
-            translationBengali = "যে অনন্যচিত্ত ভক্তগণ সর্বদা আমাতে যুক্ত থেকে আমার উপাসনা করেন, সেই নিত্যযুক্ত ভক্তদের যাবতীয় অপ্রাপ্ত বস্তুর প্রাপ্তি এবং প্রাপ্ত বস্তুর সুরক্ষা (যোগক্ষেম) আমি নিজেই বহন করি।",
-            purportBengali = "ভগবানের চিরন্তন অভয়বাণী। যে ব্যক্তি সম্পূর্ণ নির্ভরতায় নিজেকে শ্রীভগবানের চরণে সঁপে দেন, তাঁর ইহলৌকিক ও পারলৌকিক সমস্ত কল্যাণ রক্ষার দায়িত্ব স্বয়ং ঈশ্বর স্বহস্তে গ্রহণ করেন।"
-        ),
-        "9.26" to Verse(
-            chapterNumber = 9,
-            verseNumber = 26,
-            shlokaSanskrit = "पत्रं पुष्पं फलं तोयं यो मे भक्त्या प्रयच्छति |\nतदहं भक्त्युपहृतमश्नामि प्रयतात्मनः ||९-२६||",
-            pronunciationBengali = "পত্রং পুষ্পং ফলং তোয়ং যো মে ভক্ত্যা প্রযচ্ছতি।\nতদহং ভক্ত্যুপহৃতমশ্নামি প্রযতাত্মনঃ॥",
-            translationBengali = "যিনি ভক্তি সহকারে আমাকে একটি পত্র, পুষ্প, ফল অথবা কেবল একটু জলও অর্পণ করেন, বিশুদ্ধচিত্ত ভক্তের সেই ভক্তিপূর্ণ উপহার আমি সাদরে গ্রহণ করি।",
-            purportBengali = "ভক্তির গভীর মাধুর্য। ভগবান ধনসম্পদ বা জাঁকজমক দেখেন না, তিনি দেখেন ভক্তের অন্তরের বিশুদ্ধ ভক্তি ও ব্যাকুলতা।"
-        ),
-        "10.8" to Verse(
-            chapterNumber = 10,
-            verseNumber = 8,
-            shlokaSanskrit = "अहं सर्वस्य प्रभवो मत्तः सर्वं प्रवर्तते |\nइति मत्वा भजन्ते मां बुधा भावसमन्विताः ||१०-८||",
-            pronunciationBengali = "অহং সর্বস্য প্রভবো মত্তঃ সর্বং প্রবর্ততে।\nইতি মত্বা ভজন্তে মাং বুধা ভাবসমন্বিতাঃ॥",
-            translationBengali = "আমিই সমস্ত সৃষ্টির উৎস, আমা থেকেই সবকিছু প্রবর্তিত হয়। এ তত্ত্ব অবগত হয়ে প্রজ্ঞাবান ব্যক্তিরা ভাবযুক্ত হয়ে আমার আরাধনা করেন।",
-            purportBengali = "চতুঃশ্লোকী গীতার সূচনা। শ্রীকৃষ্ণ সমস্ত আধ্যাত্মিক ও জাগতিক জগতের আদি কারণ। এই মহিমাজ্ঞানে জ্ঞানী ব্যক্তি ভক্তির রসসাগরে অবগাহন করেন।"
-        ),
-        "11.32" to Verse(
-            chapterNumber = 11,
-            verseNumber = 32,
-            shlokaSanskrit = "कालोऽस्मि लोकक्षयकृत्प्रवृद्धो\nलोकान्समाहर्तुमिह प्रवृत्ततः |\nऋतेऽपि त्वां न भविष्यन्ति सर्वे\nयेऽवस्थिताः प्रत्यनीकेषु योधाः ||११-३२||",
-            pronunciationBengali = "কালোহস্মি লোকক্ষয়কৃৎপ্রবৃদ্ধো\nলোকান্ সমাহর্তুমিহ প্রবৃতঃ।\nঋতেহপি ত্বাং ন ভবিষ্যক্তি সর্বে\nযোহবস্থিতাঃ প্রত্যনীকেষু যোধাঃ॥",
-            translationBengali = "শ্রীভগবান বললেন—আমি সমগ্র জগতের বিনাশকারী মহাকল্ল। এখন সমস্ত লোককে সংহার করতে প্রবৃত্ত হয়েছি। তুমি যুদ্ধ না করলেও বিপক্ষ দলের যোদ্ধারা কেউই জীবিত থাকবে না।",
-            purportBengali = "অমোঘ কালের রূপ। বিশ্বজগতের সৃষ্টি ও লয় প্রকৃতিরই স্বাভাবিক নিয়ম। শ্রীকৃষ্ণ অর্জুনকে নিমিত্তমাত্র হয়ে ধর্মের বিজয়ে স্বধর্ম পালনের আহ্বান জানাচ্ছেন।"
-        ),
-        "12.13" to Verse(
-            chapterNumber = 12,
-            verseNumber = 13,
-            shlokaSanskrit = "अद्वेष्टा सर्वभूतानां मैत्रः करुण एव च |\nनिर्ममो निरहङ्कारः समदुःखसुखः क्षमी ||१२-१३||",
-            pronunciationBengali = "অদ্বেষ্টা সর্বভূতানাং মৈত্রঃ করুণ এব চ।\nনির্মমো নিরহঙ্কারঃ সমদুঃখসুখঃ ক্ষমী॥",
-            translationBengali = "যিনি কোনো জীবের প্রতি দ্বেষভাবাপন্ন নন, সকলের প্রতি মিত্রভাবাপন্ন ও করুণাশীল, মমত্ববোধহীন ও নিরহংকার, সুখ-দুঃখে সমভাবাপন্ন এবং ক্ষমাশীল—তিনিই আমার প্রিয়।",
-            purportBengali = "আদর্শ ভক্তের পবিত্রতম গুণাবলি। যে মানুষ অহংকারমুক্ত হয়ে সমস্ত সৃষ্টির মধ্যে ভগবানের উপস্থিতি অনুভব করে নিঃস্বার্থ করুণা বিতরণ করেন, তিনি শ্রীকৃষ্ণের পরমাশ্চর্য আশ্রিত।"
-        ),
-        "15.15" to Verse(
-            chapterNumber = 15,
-            verseNumber = 15,
-            shlokaSanskrit = "सर्वस्य चाहं हृदि संनिविष्टो\nमत्तः स्मृतिर्ज्ञानमपोहनं च |\nवेदैश्च सर्वैरहमेव वेद्यो\nवेदान्तकृद्वेदविदेव चाहम् ||१५-१५||",
-            pronunciationBengali = "সর্বস্য চাহং হৃদি সংনিবিষ্টো\nমত্তঃ স্মৃতির্জ্ঞানমপোহনং চ।\nবেদৈশ্চ সর্বৈরহমেব বেদ্যো\nবেদান্তকৃদ্ বেদবিদেব চাহম্॥",
-            translationBengali = "আমি সমস্ত জীবের হৃদয়ে অন্তর্যামী রূপে অবস্থান করি। আমা থেকেই স্মৃতি, জ্ঞান ও তার বিলোপ ঘটে। সমস্ত বেদের দ্বারা একমাত্র আমিই জ্ঞেয়, আমিই বেদান্তের প্রবক্তা এবং সমস্ত বেদের যথার্থ তাৎপর্যজ্ঞাতা।",
-            purportBengali = "হৃদয়বিহারী পরমাত্মা। ঈশ্বর সুদূরের কেউ নন, তিনি প্রতিটি অন্তরের অন্তঃস্থলে পরম সাক্ষী রূপে উপবিষ্ট। তাঁকে হৃদয়ে উপলব্ধি করাই জীবনের পরম লক্ষ্য।"
-        ),
-        "18.65" to Verse(
-            chapterNumber = 18,
-            verseNumber = 65,
-            shlokaSanskrit = "मन्मना भव मद्भक्तो मद्याजी मां नमस्कुरु |\nमामेवैष्यसि सत्यं ते प्रतिजाने प्रियोऽसि मे ||१८-६५||",
-            pronunciationBengali = "মন্মনা ভব মদ্ভক্তো মদ্যাজী মাং নমস্কুরু।\nমামেবৈষ্যসি সত্যং তে প্রতিজানে প্রিয়োহসি মে॥",
-            translationBengali = "তোমার মন সর্বদা আমাতে অর্পণ করো, আমার ভক্ত হও, আমার পূজা করো এবং আমাকেই প্রণাম করো। তবে নিশ্চিতভাবেই তুমি আমাকে প্রাপ্ত হবে। আমি তোমার কাছে সত্য প্রতিজ্ঞা করছি, কারণ তুমি আমার অত্যন্ত প্রিয়।",
-            purportBengali = "ভগবানের অন্তিম অমৃত উপদেশ। মন, বুদ্ধি, কর্ম ও প্রণাম শ্রীকৃষ্ণে নিবেদন করলেই জীব পরম গতি লাভ করে। ভক্তের প্রতি ভগবানের ভালোবাসার চরম অঙ্গীকার।"
-        ),
-        "18.66" to Verse(
-            chapterNumber = 18,
-            verseNumber = 66,
-            shlokaSanskrit = "सर्वधर्मान्परित्यज्य मामेकं शरणं व्रज |\nअहं त्वां सर्वपापेभ्यो मोक्षयिष्यामि मा शुचः ||१८-६৬||",
-            pronunciationBengali = "সর্বধর্মান্ পরিত্যজ্য মামেকং শরণং ব্রজ।\nঅহং ত্বাং সর্বপাপেভ্যো মোক্ষয়িষ্যামি মা শুচঃ॥",
-            translationBengali = "সমস্ত প্রকার গৌণ ধর্ম পরিত্যাগ করে একমাত্র আমারই শরণ গ্রহণ করো। আমি তোমাকে সমস্ত পাপ ও বন্ধন থেকে মুক্ত করব, তুমি শোক কোরো না।",
-            purportBengali = "গীতার চরমতম চরম শ্লোক (মহা-চরমা শ্লোক)। সর্বতোভাবে ঈশ্বরের চরণে নিঃশর্ত আত্মনিবেদনই জীবের পরম ধর্ম। এই শরণাগতিতে সমস্ত ভয়, মোহ ও শোক চিরতরে অপসারিত হয়।"
-        ),
-        "18.78" to Verse(
-            chapterNumber = 18,
-            verseNumber = 78,
-            shlokaSanskrit = "यत्र योगेश्वरः कृष्णो यत्र पार्थो धनुर्धरः |\nतत्र श्रीर्विजयो भूतिर्ध्रुवा नीतिर्मतिर्मम ||१८-७८||",
-            pronunciationBengali = "যত্র যোগেশ্বরঃ কৃষ্ণো যত্র পার্থো ধনুর্ধরঃ।\nতত্র শ্রীর্বিজয়া ভূতির্ধ্রুবা নীতির্মতির্মম॥",
-            translationBengali = "যেখানে যোগেশ্বর শ্রীকৃষ্ণ এবং যেখানে ধনুর্ধর পার্থ অর্জুন রয়েছেন, সেখানেই শ্রী, বিজয়, সমৃদ্ধি এবং অটল ন্যায়নীতি নিশ্চিতভাবেই বিরাজমান—এটাই আমার সুদৃঢ় বিশ্বাস।",
-            purportBengali = "শ্রীমদ্ভগবদ্গীতার উপসংহার। যেখানে ভগবানের দিব্য কৃপা ও নির্দেশ এবং মানুষের আন্তরিক পুরুষার্থ ও ন্যায়নিষ্ঠা সম্মিলিত হয়, সেখানে চিরন্তন মঙ্গল ও বিজয় অবধারিত।"
-        )
-    )
+    val specialVerses: Map<String, Verse> by lazy {
+        GitaVersesChapter1To6.verses +
+                GitaVersesChapter7To12.verses +
+                GitaVersesChapter13To18.verses
+    }
 
     fun getVerse(chapterNumber: Int, verseNumber: Int): Verse {
         val key = "$chapterNumber.$verseNumber"
         specialVerses[key]?.let { return it }
 
         val chapter = chapters.find { it.number == chapterNumber } ?: chapters.first()
-        val defaultSanskrit = "ॐ नमो भगवते वासुदेवाय |\nअध्यायः $chapterNumber श्लोकः $verseNumber ||"
-        val defaultPronunciation = "ওঁ নমো ভগবতে বাসুদেবায়।\nঅধ্যায় $chapterNumber শ্লোক $verseNumber।"
-        val defaultTranslation = "শ্রীমদ্ভগবদ্গীতার ${chapter.nameBengali}র অন্তর্গত $verseNumber সংখ্যক শ্লোক। ভগবান শ্রীকৃষ্ণ অর্জুনকে আত্মার নিত্যত্ব ও ধর্মের সুগভীর রহস্য উন্মোচন করছেন।"
-        val defaultPurport = "${chapter.summaryBengali}\n\nএই শ্লোকে শ্রীকৃষ্ণ সাধককে অন্তর্মুখী হয়ে পরম শান্তি ও আত্মোপলব্ধির পথে অগ্রসর হতে নির্দেশ প্রদান করেন।"
-
-        return Verse(
-            chapterNumber = chapterNumber,
-            verseNumber = verseNumber,
-            shlokaSanskrit = defaultSanskrit,
-            pronunciationBengali = defaultPronunciation,
-            translationBengali = defaultTranslation,
-            purportBengali = defaultPurport
-        )
+        return ThematicVerseResolver.resolve(chapter, verseNumber)
     }
 
     fun getAllVersesForChapter(chapterNumber: Int): List<Verse> {
@@ -404,40 +187,196 @@ object GitaContentProvider {
         return featuredVerses.randomOrNull() ?: getVerse(2, 47)
     }
 
+    /**
+     * Searches Gita verses by:
+     * 1. Chapter and verse number: "2.47", "২.৪৭", "২:৪৭", "অধ্যায় ২ শ্লোক ৪৭", "অধ্যায় ২ এর ৪৭", "২ ৪৭"
+     * 2. Chapter number only: "অধ্যায় ২", "অধ্যায় ৪", "chapter 2", or single digit "২"
+     * 3. Verse number only: "শ্লোক ৪৭", "verse 47", or number > 18 like "৪৭"
+     * 4. Bengali keywords: "কর্ম", "ভক্তি", "জ্ঞান", "আত্মা", "ক্রোধ", "ধ্যান", "মন", "শান্তি", "মোক্ষ", "মায়া", "শ্রদ্ধা", "ধর্ম", "ঈশ্বর", "অর্জুন", "কৃষ্ণ", "মৃত্যু", "যোগ"
+     */
     fun searchVerses(query: String): List<Verse> {
-        if (query.isBlank()) return emptyList()
-        val cleanQuery = query.trim().lowercase()
+        val trimmed = query.trim()
+        if (trimmed.isBlank()) return emptyList()
 
         val results = mutableListOf<Verse>()
+        val seenIds = mutableSetOf<String>()
 
-        // 1. Search special verses first
-        for (verse in specialVerses.values) {
-            if (verse.matches(cleanQuery)) {
+        fun addVerse(verse: Verse) {
+            if (seenIds.add(verse.verseId)) {
                 results.add(verse)
             }
         }
 
-        // 2. Search chapter titles and summaries
-        for (ch in chapters) {
-            if (ch.nameBengali.lowercase().contains(cleanQuery) ||
-                ch.nameSanskrit.lowercase().contains(cleanQuery) ||
-                ch.meaningBengali.lowercase().contains(cleanQuery)
-            ) {
-                val firstVerse = getVerse(ch.number, 1)
-                if (!results.any { it.verseId == firstVerse.verseId }) {
-                    results.add(firstVerse)
+        val asciiNormalized = com.example.util.BengaliNumberHelper.normalizeBengaliToAscii(trimmed).lowercase()
+        val bengaliNormalized = com.example.util.BengaliNumberHelper.toBengali(trimmed)
+
+        // --- 1. Chapter and Verse Pattern Matching ---
+        // Examples: "2.47", "2:47", "2-47", "2/47", "2 47"
+        val sepPattern = Regex("""^([0-9]{1,2})[\.\:\-\/\s]+([0-9]{1,3})$""")
+        val sepMatch = sepPattern.find(asciiNormalized)
+        if (sepMatch != null) {
+            val chNum = sepMatch.groupValues[1].toIntOrNull()
+            val vNum = sepMatch.groupValues[2].toIntOrNull()
+            if (chNum != null && vNum != null && chNum in 1..18) {
+                val chapter = chapters.find { it.number == chNum }
+                if (chapter != null && vNum in 1..chapter.verseCount) {
+                    addVerse(getVerse(chNum, vNum))
+                    return results
                 }
+            }
+        }
+
+        // Examples: "অধ্যায় ২ শ্লোক ৪৭", "অধ্যায় ২ শ্লোক ৪৭", "অধ্যায় ২ এর ৪৭", "chapter 2 verse 47", "ch 2 v 47", "অধ্যায় ২.৪৭"
+        val namedPattern = Regex("""(?:অধ্যা[^\s\d]*|ch(?:apter)?)\s*([0-9]{1,2})[\s\,]*(?:(?:শ্লোক[^\s\d]*|verse|এর|v)\s*|[\.\:\-\/]\s*)([0-9]{1,3})""")
+        val namedMatch = namedPattern.find(asciiNormalized)
+        if (namedMatch != null) {
+            val chNum = namedMatch.groupValues[1].toIntOrNull()
+            val vNum = namedMatch.groupValues[2].toIntOrNull()
+            if (chNum != null && vNum != null && chNum in 1..18) {
+                val chapter = chapters.find { it.number == chNum }
+                if (chapter != null && vNum in 1..chapter.verseCount) {
+                    addVerse(getVerse(chNum, vNum))
+                    return results
+                }
+            }
+        }
+
+        // Reversed pattern: "২ অধ্যায় ৪৭ শ্লোক", "2 ch 47 v"
+        val revNamedPattern = Regex("""([0-9]{1,2})\s*(?:অধ্যা[^\s\d]*|ch(?:apter)?)[\s\,]*(?:(?:শ্লোক[^\s\d]*|verse|v)\s*|[\.\:\-\/]\s*)([0-9]{1,3})""")
+        val revNamedMatch = revNamedPattern.find(asciiNormalized)
+        if (revNamedMatch != null) {
+            val chNum = revNamedMatch.groupValues[1].toIntOrNull()
+            val vNum = revNamedMatch.groupValues[2].toIntOrNull()
+            if (chNum != null && vNum != null && chNum in 1..18) {
+                val chapter = chapters.find { it.number == chNum }
+                if (chapter != null && vNum in 1..chapter.verseCount) {
+                    addVerse(getVerse(chNum, vNum))
+                    return results
+                }
+            }
+        }
+
+        // --- 2. Chapter Only Matching ---
+        // Examples: "অধ্যায় ২", "অধ্যায় ৪", "chapter 2", "ch 2"
+        val chapterOnlyPattern = Regex("""(?:^|\s)(?:অধ্যা[^\s\d]*|chapter|ch)\s*([0-9]{1,2})(?:\s|$)""")
+        val chapterOnlyMatch = chapterOnlyPattern.find(asciiNormalized)
+        if (chapterOnlyMatch != null) {
+            val chNum = chapterOnlyMatch.groupValues[1].toIntOrNull()
+            if (chNum != null && chNum in 1..18) {
+                // Add special verses of this chapter first
+                specialVerses.values.filter { it.chapterNumber == chNum }.forEach { addVerse(it) }
+                // Add first verse of this chapter
+                addVerse(getVerse(chNum, 1))
+                return results
+            }
+        }
+
+        // --- 3. Verse Only Matching ---
+        // Examples: "শ্লোক ৪৭", "verse 47", "shlok 47"
+        val verseOnlyPattern = Regex("""(?:^|\s)(?:শ্লোক[^\s\d]*|verse|shlok|ভার্স)\s*([0-9]{1,3})(?:\s|$)""")
+        val verseOnlyMatch = verseOnlyPattern.find(asciiNormalized)
+        if (verseOnlyMatch != null) {
+            val vNum = verseOnlyMatch.groupValues[1].toIntOrNull()
+            if (vNum != null) {
+                // Prioritize special verses with this verse number
+                specialVerses.values.filter { it.verseNumber == vNum }.forEach { addVerse(it) }
+                // Add matching verses from chapters having this verse
+                chapters.filter { it.verseCount >= vNum }.forEach { ch ->
+                    addVerse(getVerse(ch.number, vNum))
+                }
+                return results
+            }
+        }
+
+        // Single number query check (e.g. "৪৭" or "47" or "২" or "2")
+        val singleNum = asciiNormalized.toIntOrNull()
+        if (singleNum != null) {
+            if (singleNum in 1..18) {
+                // Could be Chapter X or Verse X
+                specialVerses.values.filter { it.chapterNumber == singleNum }.forEach { addVerse(it) }
+                addVerse(getVerse(singleNum, 1))
+                specialVerses.values.filter { it.verseNumber == singleNum }.forEach { addVerse(it) }
+                return results
+            } else if (singleNum > 18) {
+                // It must be a verse number
+                specialVerses.values.filter { it.verseNumber == singleNum }.forEach { addVerse(it) }
+                chapters.filter { it.verseCount >= singleNum }.forEach { ch ->
+                    addVerse(getVerse(ch.number, singleNum))
+                }
+                return results
+            }
+        }
+
+        // --- 4. Thematic Bengali Keyword Matching ---
+        val cleanKeyword = trimmed.lowercase()
+        val bengaliDigits = com.example.util.BengaliNumberHelper.toBengali(asciiNormalized)
+
+        // Search special verses
+        for (verse in specialVerses.values) {
+            val bnVerseId = "${com.example.util.BengaliNumberHelper.toBengali(verse.chapterNumber)}.${com.example.util.BengaliNumberHelper.toBengali(verse.verseNumber)}"
+            val matchesText = verse.pronunciationBengali.lowercase().contains(cleanKeyword) ||
+                    verse.translationBengali.lowercase().contains(cleanKeyword) ||
+                    verse.purportBengali.lowercase().contains(cleanKeyword) ||
+                    verse.shlokaSanskrit.lowercase().contains(cleanKeyword) ||
+                    "${verse.chapterNumber}.${verse.verseNumber}".contains(asciiNormalized) ||
+                    bnVerseId.contains(bengaliNormalized)
+
+            if (matchesText) {
+                addVerse(verse)
+            }
+        }
+
+        // Search thematic topic dictionary
+        val topicVerses = findVersesByTopic(cleanKeyword)
+        topicVerses.forEach { addVerse(it) }
+
+        // Search chapter titles, meanings, and summaries
+        for (ch in chapters) {
+            if (ch.nameBengali.lowercase().contains(cleanKeyword) ||
+                ch.meaningBengali.lowercase().contains(cleanKeyword) ||
+                ch.summaryBengali.lowercase().contains(cleanKeyword) ||
+                ch.nameSanskrit.lowercase().contains(cleanKeyword)
+            ) {
+                // Add all special verses from this chapter
+                specialVerses.values.filter { it.chapterNumber == ch.number }.forEach { addVerse(it) }
+                addVerse(getVerse(ch.number, 1))
             }
         }
 
         return results
     }
 
-    private fun Verse.matches(query: String): Boolean {
-        return shlokaSanskrit.lowercase().contains(query) ||
-                pronunciationBengali.lowercase().contains(query) ||
-                translationBengali.lowercase().contains(query) ||
-                purportBengali.lowercase().contains(query) ||
-                "${chapterNumber}.${verseNumber}".contains(query)
+    /**
+     * Map common Bengali spiritual themes to their cornerstone verses.
+     */
+    private fun findVersesByTopic(keyword: String): List<Verse> {
+        val topicMap = mapOf(
+            "কর্ম" to listOf(getVerse(2, 47), getVerse(3, 8), getVerse(3, 21), getVerse(4, 38)),
+            "ভক্তি" to listOf(getVerse(9, 22), getVerse(9, 26), getVerse(12, 13), getVerse(18, 65)),
+            "জ্ঞান" to listOf(getVerse(4, 38), getVerse(7, 7), getVerse(15, 15)),
+            "আত্মা" to listOf(getVerse(2, 20), getVerse(2, 22), getVerse(2, 14)),
+            "মৃত্যু" to listOf(getVerse(2, 20), getVerse(2, 22), getVerse(8, 28)),
+            "ক্রোধ" to listOf(getVerse(2, 62), getVerse(2, 63), getVerse(16, 24)),
+            "কাম" to listOf(getVerse(2, 62), getVerse(2, 63)),
+            "মন" to listOf(getVerse(6, 5), getVerse(6, 26)),
+            "ধ্যান" to listOf(getVerse(6, 5), getVerse(6, 26)),
+            "শান্তি" to listOf(getVerse(2, 14), getVerse(2, 7), getVerse(12, 13)),
+            "মোক্ষ" to listOf(getVerse(18, 65), getVerse(18, 66), getVerse(18, 78)),
+            "শরণ" to listOf(getVerse(2, 7), getVerse(18, 66)),
+            "ধর্ম" to listOf(getVerse(1, 1), getVerse(4, 7), getVerse(4, 8), getVerse(18, 66)),
+            "ঈশ্বর" to listOf(getVerse(7, 7), getVerse(10, 8), getVerse(11, 32), getVerse(15, 15)),
+            "কৃষ্ণ" to listOf(getVerse(7, 7), getVerse(10, 8), getVerse(18, 65), getVerse(18, 78)),
+            "অর্জুন" to listOf(getVerse(1, 1), getVerse(1, 47), getVerse(2, 7), getVerse(18, 78)),
+            "যুদ্ধ" to listOf(getVerse(1, 1), getVerse(1, 47), getVerse(11, 32)),
+            "সাংখ্য" to listOf(getVerse(2, 7), getVerse(2, 14), getVerse(2, 20), getVerse(2, 47)),
+            "স্থিতপ্রজ্ঞ" to listOf(getVerse(2, 14), getVerse(2, 20), getVerse(2, 47))
+        )
+
+        for ((topic, verses) in topicMap) {
+            if (keyword.contains(topic) || topic.contains(keyword)) {
+                return verses
+            }
+        }
+        return emptyList()
     }
 }
