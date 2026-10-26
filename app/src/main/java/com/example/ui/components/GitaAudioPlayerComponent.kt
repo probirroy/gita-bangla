@@ -163,6 +163,7 @@ fun GitaAudioPlayerCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
         ),
+        border = com.example.ui.theme.blueCardBorder(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(

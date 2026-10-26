@@ -127,9 +127,12 @@ fun NoteDialog(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Verse Context Preview Card
-                Surface(
-                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                androidx.compose.material3.Card(
+                    colors = androidx.compose.material3.CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                    ),
                     shape = RoundedCornerShape(10.dp),
+                    border = com.example.ui.theme.blueCardBorder(),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(modifier = Modifier.padding(10.dp)) {

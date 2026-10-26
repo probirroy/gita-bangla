@@ -240,10 +240,7 @@ fun MediaPlaybackController(
             .testTag("verse_media_playback_controller"),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(containerColor = containerColor),
-        border = BorderStroke(
-            width = if (isPlaying) 1.5.dp else 1.dp,
-            color = if (isPlaying) SaffronPrimary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.18f)
-        ),
+        border = com.example.ui.theme.blueCardBorder(),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isPlaying) 4.dp else 2.dp)
     ) {
         Column(

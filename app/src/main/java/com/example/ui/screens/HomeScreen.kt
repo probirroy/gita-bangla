@@ -37,6 +37,8 @@ import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RestartAlt
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.filled.ShowChart
 import androidx.compose.material.icons.filled.Stop
@@ -59,10 +61,14 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
+import com.example.data.model.Verse
 import com.example.ui.components.AudioWaveformVisualizer
 import com.example.ui.components.DailyVerseComponent
+import com.example.ui.components.TopReadingProgressTracker
 import com.example.ui.components.VerseAudioPlayer
 import com.example.ui.components.formatAudioTime
+import com.example.ui.theme.SaffronPrimary
+import com.example.util.BengaliNumberHelper
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -127,7 +133,6 @@ fun HomeScreen(
     var selectedDashboardTab by remember { mutableIntStateOf(0) }
     var showCustomGoalDialog by remember { mutableStateOf(false) }
     var customGoalInput by remember { mutableStateOf("") }
-
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -185,6 +190,16 @@ fun HomeScreen(
             }
         }
 
+        // --- TOP READING PROGRESS TRACKER (CHAPTERS & VERSES READ) ---
+        item {
+            TopReadingProgressTracker(
+                viewModel = viewModel,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
+            )
+        }
+
         // Streak & Quick Stats
         item {
             Row(
@@ -199,7 +214,8 @@ fun HomeScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    border = com.example.ui.theme.blueCardBorder()
                 ) {
                     Row(
                         modifier = Modifier.padding(14.dp),
@@ -247,7 +263,8 @@ fun HomeScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant
                     ),
-                    shape = RoundedCornerShape(16.dp)
+                    shape = RoundedCornerShape(16.dp),
+                    border = com.example.ui.theme.blueCardBorder()
                 ) {
                     Row(
                         modifier = Modifier.padding(14.dp),
@@ -311,6 +328,7 @@ fun HomeScreen(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
+                border = com.example.ui.theme.blueCardBorder(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
@@ -802,7 +820,9 @@ fun HomeScreen(
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
+                ),
+                border = com.example.ui.theme.blueCardBorder(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -856,7 +876,9 @@ fun HomeScreen(
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
-                )
+                ),
+                border = com.example.ui.theme.blueCardBorder(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Row(
@@ -1049,6 +1071,7 @@ fun HomeScreen(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 ),
+                border = com.example.ui.theme.blueCardBorder(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
             ) {
                 Column(modifier = Modifier.padding(14.dp)) {
@@ -1189,3 +1212,4 @@ fun HomeScreen(
         )
     }
 }
+

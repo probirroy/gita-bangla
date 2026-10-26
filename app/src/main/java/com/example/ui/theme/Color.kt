@@ -1,6 +1,7 @@
 package com.example.ui.theme
 
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 
 // Spiritual Ochre & Saffron Gold (Primary)
 val SaffronPrimary = Color(0xFFC05621)
@@ -36,3 +37,8 @@ val SepiaCard = Color(0xFFE2D4C0)
 val TextPrimarySepia = Color(0xFF382513)
 val TextSecondarySepia = Color(0xFF785E46)
 val SepiaPrimary = Color(0xFF9C4221)
+
+// Blue Card Outline Border (Prominent, crisp, modern blue border for all cards)
+val BlueCardBorder = Color(0xFF2563EB)
+val BlueCardBorderSubtle = Color(0xFF3B82F6).copy(alpha = 0.5f)
+fun blueCardBorder(width: androidx.compose.ui.unit.Dp = 1.5.dp) = androidx.compose.foundation.BorderStroke(width, BlueCardBorder)

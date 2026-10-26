@@ -78,6 +78,7 @@ fun AudioFloatingBar(
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
             ),
+            border = com.example.ui.theme.blueCardBorder(),
             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {

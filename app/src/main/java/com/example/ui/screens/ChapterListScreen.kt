@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForwardIos
 import androidx.compose.material.icons.filled.AutoStories
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material3.Card
@@ -64,6 +65,7 @@ fun ChapterListScreen(
 ) {
     val allProgress by viewModel.allChapterProgress.collectAsState()
     val overallProgress by viewModel.overallGitaProgress.collectAsState()
+    val settings by viewModel.userSettings.collectAsState()
     val progressMap = allProgress.associateBy { it.chapterNumber }
 
     var filterSelection by remember { mutableIntStateOf(0) } // 0: All, 1: Completed, 2: In Progress, 3: Unread
@@ -117,7 +119,9 @@ fun ChapterListScreen(
                     shape = RoundedCornerShape(20.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                    ),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(18.dp)) {
                         Row(
@@ -281,6 +285,7 @@ fun ChapterListScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = if (isCompleted) MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f) else MaterialTheme.colorScheme.surface
                     ),
+                    border = com.example.ui.theme.blueCardBorder(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
@@ -346,6 +351,35 @@ fun ChapterListScreen(
                             }
 
                             Spacer(modifier = Modifier.width(8.dp))
+
+                            val isDownloaded = settings.isChapterDownloaded(chapter.number)
+                            if (isDownloaded) {
+                                Surface(
+                                    color = Color(0xFFE8F5E9),
+                                    shape = RoundedCornerShape(10.dp),
+                                    modifier = Modifier.testTag("chapter_offline_badge_${chapter.number}")
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.CloudDone,
+                                            contentDescription = "অফলাইনে সংরক্ষিত",
+                                            tint = Color(0xFF2E7D32),
+                                            modifier = Modifier.size(12.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(3.dp))
+                                        Text(
+                                            text = "অফলাইন",
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = Color(0xFF2E7D32)
+                                        )
+                                    }
+                                }
+                                Spacer(modifier = Modifier.width(6.dp))
+                            }
 
                             // Status Pill / Badge
                             Surface(

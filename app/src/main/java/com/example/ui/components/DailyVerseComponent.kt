@@ -113,7 +113,7 @@ fun DailyVerseComponent(
             .testTag("verse_of_the_day_component")
             .testTag("verse_of_the_day_feature"),
         shape = RoundedCornerShape(22.dp),
-        border = BorderStroke(1.5.dp, SaffronPrimary.copy(alpha = 0.35f)),
+        border = com.example.ui.theme.blueCardBorder(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
         ),

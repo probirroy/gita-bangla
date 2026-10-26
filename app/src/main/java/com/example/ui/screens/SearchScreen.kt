@@ -73,9 +73,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.audio.AudioStateManager
 import com.example.audio.PlaybackState
 import com.example.data.model.Verse
 import com.example.data.source.GitaContentProvider
+import com.example.ui.components.VerseCardAudioPlayer
 import com.example.ui.theme.GoldAccent
 import com.example.ui.theme.LotusTeal
 import com.example.ui.theme.SaffronPrimary
@@ -175,6 +177,7 @@ fun SearchScreen(
                 colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f)
                 ),
+                border = com.example.ui.theme.blueCardBorder(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
             ) {
                 OutlinedTextField(
@@ -326,7 +329,7 @@ fun SearchScreen(
                             colors = CardDefaults.cardColors(
                                 containerColor = LotusTeal.copy(alpha = 0.08f)
                             ),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, LotusTeal.copy(alpha = 0.25f))
+                            border = com.example.ui.theme.blueCardBorder()
                         ) {
                             Row(
                                 modifier = Modifier.padding(16.dp),
@@ -407,7 +410,8 @@ fun SearchScreen(
                             shape = RoundedCornerShape(20.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                            )
+                            ),
+                            border = com.example.ui.theme.blueCardBorder()
                         ) {
                             Column(
                                 modifier = Modifier
@@ -460,13 +464,11 @@ fun SearchScreen(
                             val isBookmarked = bookmarks.any {
                                 it.chapterNumber == verse.chapterNumber && it.verseNumber == verse.verseNumber
                             }
-                            val isThisVersePlaying = currentPlayingVerse?.verseId == verse.verseId
-
                             SearchResultVerseCard(
                                 verse = verse,
                                 chapterNameBengali = chapter?.nameBengali ?: "",
                                 isBookmarked = isBookmarked,
-                                isPlaying = isThisVersePlaying,
+                                audioStateManager = viewModel.audioStateManager,
                                 onOpenVerse = {
                                     HapticHelper.performClick(null)
                                     viewModel.openVerseReader(verse.chapterNumber, verse.verseNumber)
@@ -474,10 +476,6 @@ fun SearchScreen(
                                 onToggleBookmark = {
                                     HapticHelper.performClick(null)
                                     viewModel.toggleBookmarkForVerse(verse.chapterNumber, verse.verseNumber)
-                                },
-                                onTogglePlay = {
-                                    HapticHelper.performClick(null)
-                                    viewModel.togglePlayRecitation(verse)
                                 },
                                 onShare = {
                                     HapticHelper.performClick(null)
@@ -501,10 +499,9 @@ private fun SearchResultVerseCard(
     verse: Verse,
     chapterNameBengali: String,
     isBookmarked: Boolean,
-    isPlaying: Boolean,
+    audioStateManager: AudioStateManager,
     onOpenVerse: () -> Unit,
     onToggleBookmark: () -> Unit,
-    onTogglePlay: () -> Unit,
     onShare: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -518,9 +515,9 @@ private fun SearchResultVerseCard(
             .testTag("search_result_${verse.verseId}"),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (isPlaying) SaffronPrimary.copy(alpha = 0.06f) else MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.surface
         ),
-        border = if (isPlaying) androidx.compose.foundation.BorderStroke(1.5.dp, SaffronPrimary) else null,
+        border = com.example.ui.theme.blueCardBorder(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -614,40 +611,20 @@ private fun SearchResultVerseCard(
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // Bottom Action Row: Play Audio & Open Reader
+            // Audio Player Component for this Verse Card
+            VerseCardAudioPlayer(
+                verse = verse,
+                audioStateManager = audioStateManager
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Open Reader link
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // One-tap Audio Play Button
-                Surface(
-                    onClick = onTogglePlay,
-                    shape = RoundedCornerShape(12.dp),
-                    color = if (isPlaying) SaffronPrimary else SaffronPrimary.copy(alpha = 0.12f),
-                    modifier = Modifier.testTag("audio_play_search_result_${verse.verseId}")
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (isPlaying) "আবৃত্তি থামান" else "আবৃত্তি শুনুন",
-                            tint = if (isPlaying) Color.White else SaffronPrimary,
-                            modifier = Modifier.size(16.dp)
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (isPlaying) "আবৃত্তি চলছে..." else "আবৃত্তি শুনুন",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = if (isPlaying) Color.White else SaffronPrimary
-                        )
-                    }
-                }
-
-                // Read Details Button
                 Row(
                     modifier = Modifier
                         .clickable(onClick = onOpenVerse)
@@ -656,7 +633,7 @@ private fun SearchResultVerseCard(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "সম্পূর্ণ পড়ুন",
+                        text = "সম্পূর্ণ শ্লোক ও তাৎপর্য পড়ুন",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Medium,
                         color = MaterialTheme.colorScheme.primary

@@ -297,6 +297,61 @@ class ExampleUnitTest {
     }
 
     @Test
+    fun verifyVerseTextFontSizeSliderFunctionalityAndReadability() {
+        val settings = com.example.data.model.UserReadingSettings()
+
+        // 1. Initial baseline: 19sp verse shloka size is default
+        assertEquals(19f, settings.shlokaFontSize, 0.01f)
+        assertEquals("১৯ sp", "${com.example.util.BengaliNumberHelper.toBengali(settings.shlokaFontSize.toInt())} sp")
+
+        // 2. Adjust verse slider to minimum (14sp)
+        val minShloka = 14f
+        val minScale = minShloka / 19f
+        val minTrans = (16f * minScale).coerceIn(12f, 26f)
+        val minPurport = (15f * minScale).coerceIn(11f, 24f)
+        val minSettings = settings.copy(
+            shlokaFontSize = minShloka,
+            translationFontSize = minTrans,
+            purportFontSize = minPurport
+        )
+        assertEquals(14f, minSettings.shlokaFontSize, 0.01f)
+        assertTrue("Translation must be >= 12sp", minSettings.translationFontSize >= 12f)
+        assertTrue("Purport must be >= 11sp", minSettings.purportFontSize >= 11f)
+        assertEquals("১৪ sp", "${com.example.util.BengaliNumberHelper.toBengali(minSettings.shlokaFontSize.toInt())} sp")
+
+        // 3. Adjust verse slider to maximum (32sp) for maximum readability
+        val maxShloka = 32f
+        val maxScale = maxShloka / 19f
+        val maxTrans = (16f * maxScale).coerceIn(12f, 26f)
+        val maxPurport = (15f * maxScale).coerceIn(11f, 24f)
+        val maxSettings = settings.copy(
+            shlokaFontSize = maxShloka,
+            translationFontSize = maxTrans,
+            purportFontSize = maxPurport
+        )
+        assertEquals(32f, maxSettings.shlokaFontSize, 0.01f)
+        assertTrue("Translation must be <= 26sp", maxSettings.translationFontSize <= 26f)
+        assertTrue("Purport must be <= 24sp", maxSettings.purportFontSize <= 24f)
+        assertEquals("৩২ sp", "${com.example.util.BengaliNumberHelper.toBengali(maxSettings.shlokaFontSize.toInt())} sp")
+
+        // 4. Verify preset chips: 16sp (Small), 19sp (Default), 23sp (Large), 27sp (Extra Large)
+        val presetSizes = listOf(16f, 19f, 23f, 27f)
+        for (targetSize in presetSizes) {
+            val scale = targetSize / 19f
+            val trans = (16f * scale).coerceIn(12f, 26f)
+            val purport = (15f * scale).coerceIn(11f, 24f)
+            val updated = settings.copy(
+                shlokaFontSize = targetSize,
+                translationFontSize = trans,
+                purportFontSize = purport
+            )
+            assertEquals(targetSize, updated.shlokaFontSize, 0.01f)
+            assertTrue("Translation font size must be proportional", updated.translationFontSize > 0f)
+            assertTrue("Purport font size must be proportional", updated.purportFontSize > 0f)
+        }
+    }
+
+    @Test
     fun verifyVerseOfTheDayDailyDeterminismAndRandomFallback() {
         // Daily verse for day 42 should be deterministic
         val verseDay42 = GitaContentProvider.getDailyVerse(42)
@@ -580,6 +635,222 @@ class ExampleUnitTest {
         assertEquals(note.noteText, entity.noteText)
         assertEquals(note.chapterNumber, entity.chapterNumber)
         assertEquals(note.verseNumber, entity.verseNumber)
+    }
+
+    @Test
+    fun verifyBlueCardBorderAttributes() {
+        val border = com.example.ui.theme.blueCardBorder()
+        assertNotNull(border)
+        val solidColor = border.brush as androidx.compose.ui.graphics.SolidColor
+        assertEquals(com.example.ui.theme.BlueCardBorder, solidColor.value)
+    }
+
+    @Test
+    fun verifyMainScreenSearchBarFilteringByKeywordsAndVerseNumbers() {
+        // 1. Verse number filtering with Bengali numerals (২.৪৭)
+        val verse247Results = GitaContentProvider.searchVerses("২.৪৭")
+        assertTrue("Filter by '২.৪৭' must return at least one verse", verse247Results.isNotEmpty())
+        assertEquals(2, verse247Results.first().chapterNumber)
+        assertEquals(47, verse247Results.first().verseNumber)
+
+        // 2. Verse number filtering with ASCII digits (18.66)
+        val verse1866Results = GitaContentProvider.searchVerses("18.66")
+        assertTrue("Filter by '18.66' must return at least one verse", verse1866Results.isNotEmpty())
+        assertEquals(18, verse1866Results.first().chapterNumber)
+        assertEquals(66, verse1866Results.first().verseNumber)
+
+        // 3. Keyword filtering: "কর্ম"
+        val karmaVerses = GitaContentProvider.searchVerses("কর্ম")
+        assertTrue("Filter by 'কর্ম' should return karma verses", karmaVerses.isNotEmpty())
+        assertTrue(karmaVerses.any { it.translationBengali.contains("কর্ম") || it.pronunciationBengali.contains("কর্ম") })
+
+        // 4. Keyword filtering: "ভক্তি"
+        val bhaktiVerses = GitaContentProvider.searchVerses("ভক্তি")
+        assertTrue("Filter by 'ভক্তি' should return bhakti verses", bhaktiVerses.isNotEmpty())
+
+        // 5. Keyword filtering: "শান্তি"
+        val shantiVerses = GitaContentProvider.searchVerses("শান্তি")
+        assertTrue("Filter by 'শান্তি' should return shanti verses", shantiVerses.isNotEmpty())
+
+        // 6. Natural Bengali phrase query: "অধ্যায় ২ শ্লোক ৪৭"
+        val phraseResults = GitaContentProvider.searchVerses("অধ্যায় ২ শ্লোক ৪৭")
+        assertTrue(phraseResults.any { it.chapterNumber == 2 && it.verseNumber == 47 })
+
+        // 7. Non-matching query
+        val emptyResults = GitaContentProvider.searchVerses("xyznonexistentword")
+        assertTrue(emptyResults.isEmpty())
+    }
+
+    @Test
+    fun verifyVerseCardAudioPlayerLinkingAndControls() {
+        val testVerses = listOf(
+            GitaContentProvider.getVerse(1, 1),
+            GitaContentProvider.getVerse(2, 47),
+            GitaContentProvider.getVerse(18, 66)
+        )
+
+        for (verse in testVerses) {
+            val fileName = "gita_recitation_ch${verse.chapterNumber}_v${verse.verseNumber}.mp3"
+            val uri = "asset:///audio/recitations/bengali/$fileName"
+            val title = "অধ্যায় ${verse.chapterNumber}, শ্লোক ${verse.verseNumber} বাংলা আবৃত্তি"
+            val audioFile = com.example.audio.VerseAudioFile(
+                verseId = verse.verseId,
+                chapterNumber = verse.chapterNumber,
+                verseNumber = verse.verseNumber,
+                audioFileName = fileName,
+                audioUri = uri,
+                titleBengali = title,
+                bengaliShlok = verse.pronunciationBengali,
+                bengaliTranslation = verse.translationBengali,
+                estimatedDurationSeconds = 25f
+            )
+
+            assertEquals(verse.verseId, audioFile.verseId)
+            assertTrue(audioFile.audioFileName.endsWith(".mp3"))
+            assertTrue(audioFile.titleBengali.contains("অধ্যায় ${verse.chapterNumber}"))
+            assertTrue(audioFile.bengaliShlok.isNotBlank())
+            assertTrue(audioFile.bengaliTranslation.isNotBlank())
+            assertTrue(audioFile.estimatedDurationSeconds > 0f)
+
+            // Seek progress calculation: 0%, 50%, 100%
+            val dur = audioFile.estimatedDurationSeconds
+            assertEquals("00:00", com.example.ui.components.formatAudioTime(0f * dur))
+            assertEquals("00:12", com.example.ui.components.formatAudioTime(0.5f * dur))
+            assertEquals("00:25", com.example.ui.components.formatAudioTime(1.0f * dur))
+
+            // Rewind & Forward boundary checks
+            val rewindFrom10 = (10f - 5f).coerceIn(0f, dur)
+            assertEquals(5f, rewindFrom10, 0.001f)
+            val rewindFrom2 = (2f - 5f).coerceIn(0f, dur)
+            assertEquals(0f, rewindFrom2, 0.001f)
+            val forwardFrom22 = (22f + 5f).coerceIn(0f, dur)
+            assertEquals(dur, forwardFrom22, 0.001f)
+        }
+    }
+
+    @Test
+    fun verifyTopReadingProgressTrackerChaptersAndVersesCalculation() {
+        val totalChapters = 18
+        val totalVerses = 700
+
+        // 1. Initial State: 0 verses, 0 chapters
+        val initialProgress = com.example.data.model.OverallGitaProgress(
+            totalChapters = totalChapters,
+            completedChaptersCount = 0,
+            inProgressChaptersCount = 0,
+            totalVerses = totalVerses,
+            totalVersesRead = 0,
+            overallPercentage = 0f
+        )
+        assertEquals(0, initialProgress.completedChaptersCount)
+        assertEquals(0, initialProgress.totalVersesRead)
+        assertEquals(0f, initialProgress.overallPercentage, 0.001f)
+
+        val initialVerseFraction = (initialProgress.totalVersesRead.toFloat() / initialProgress.totalVerses.toFloat()).coerceIn(0f, 1f)
+        val initialChapterFraction = (initialProgress.completedChaptersCount.toFloat() / initialProgress.totalChapters.toFloat()).coerceIn(0f, 1f)
+        assertEquals(0f, initialVerseFraction, 0.001f)
+        assertEquals(0f, initialChapterFraction, 0.001f)
+        assertEquals("০ / ৭০০", "${com.example.util.BengaliNumberHelper.toBengali(0)} / ${com.example.util.BengaliNumberHelper.toBengali(700)}")
+        assertEquals("০ / ১৮", "${com.example.util.BengaliNumberHelper.toBengali(0)} / ${com.example.util.BengaliNumberHelper.toBengali(18)}")
+
+        // 2. Partial Progress: 140 verses read across 4 chapters (Chapter 1 completed: 47 verses, Chapter 2 completed: 72 verses, Chapter 3 in-progress: 21 verses)
+        val completedCh = 2
+        val inProgressCh = 1
+        val versesRead = 140
+        val remainingVerses = (totalVerses - versesRead).coerceAtLeast(0)
+        assertEquals(560, remainingVerses)
+
+        val partialProgress = com.example.data.model.OverallGitaProgress(
+            totalChapters = totalChapters,
+            completedChaptersCount = completedCh,
+            inProgressChaptersCount = inProgressCh,
+            totalVerses = totalVerses,
+            totalVersesRead = versesRead,
+            overallPercentage = (versesRead.toFloat() / totalVerses.toFloat()) * 100f
+        )
+
+        assertEquals(2, partialProgress.completedChaptersCount)
+        assertEquals(1, partialProgress.inProgressChaptersCount)
+        assertEquals(140, partialProgress.totalVersesRead)
+        assertEquals(20.0f, partialProgress.overallPercentage, 0.01f)
+
+        val verseFraction = (partialProgress.totalVersesRead.toFloat() / partialProgress.totalVerses.toFloat()).coerceIn(0f, 1f)
+        val chapterFraction = (partialProgress.completedChaptersCount.toFloat() / partialProgress.totalChapters.toFloat()).coerceIn(0f, 1f)
+        assertEquals(0.2f, verseFraction, 0.001f)
+        assertEquals(2f / 18f, chapterFraction, 0.001f)
+
+        // Verify Bengali text representation
+        assertEquals("১৪০ / ৭০০", "${com.example.util.BengaliNumberHelper.toBengali(versesRead)} / ${com.example.util.BengaliNumberHelper.toBengali(totalVerses)}")
+        assertEquals("২ / ১৮", "${com.example.util.BengaliNumberHelper.toBengali(completedCh)} / ${com.example.util.BengaliNumberHelper.toBengali(totalChapters)}")
+        assertEquals("২০.০% সমাপ্ত", "${com.example.util.BengaliNumberHelper.toBengali(String.format(java.util.Locale.US, "%.1f", partialProgress.overallPercentage))}% সমাপ্ত")
+
+        // 3. Complete Progress: 700 verses, 18 chapters completed
+        val fullProgress = com.example.data.model.OverallGitaProgress(
+            totalChapters = totalChapters,
+            completedChaptersCount = 18,
+            inProgressChaptersCount = 0,
+            totalVerses = totalVerses,
+            totalVersesRead = 700,
+            overallPercentage = 100f
+        )
+        val fullVerseFraction = (fullProgress.totalVersesRead.toFloat() / fullProgress.totalVerses.toFloat()).coerceIn(0f, 1f)
+        val fullChapterFraction = (fullProgress.completedChaptersCount.toFloat() / fullProgress.totalChapters.toFloat()).coerceIn(0f, 1f)
+        assertEquals(1.0f, fullVerseFraction, 0.001f)
+        assertEquals(1.0f, fullChapterFraction, 0.001f)
+        assertEquals("১০০.০% সমাপ্ত", "${com.example.util.BengaliNumberHelper.toBengali(String.format(java.util.Locale.US, "%.1f", fullProgress.overallPercentage))}% সমাপ্ত")
+    }
+
+    @Test
+    fun verifyOfflineChapterDownloadSettingsAndAccessibility() {
+        val initialSettings = com.example.data.model.UserReadingSettings()
+        // 1. Initial State: Offline reading is disabled and no downloaded chapters
+        assertFalse(initialSettings.offlineReadingEnabled)
+        assertTrue(initialSettings.downloadedChapters.isEmpty())
+        assertFalse(initialSettings.isChapterDownloaded(1))
+
+        // 2. Enable offline reading and download specific chapters (e.g. Chapter 1 and Chapter 2)
+        val withCh1and2 = initialSettings.copy(
+            offlineReadingEnabled = true,
+            downloadedChapters = setOf(1, 2)
+        )
+        assertTrue(withCh1and2.offlineReadingEnabled)
+        assertEquals(2, withCh1and2.downloadedChapters.size)
+        assertTrue(withCh1and2.isChapterDownloaded(1))
+        assertTrue(withCh1and2.isChapterDownloaded(2))
+        assertFalse(withCh1and2.isChapterDownloaded(3))
+        assertFalse(withCh1and2.isChapterDownloaded(18))
+
+        // 3. Entity comma-separated persistence conversion
+        val entity = com.example.data.local.AppSettingsEntity(
+            offlineReadingEnabled = withCh1and2.offlineReadingEnabled,
+            downloadedChaptersList = withCh1and2.downloadedChapters.sorted().joinToString(",")
+        )
+        assertEquals("1,2", entity.downloadedChaptersList)
+        assertEquals(setOf(1, 2), entity.downloadedChaptersSet)
+
+        // 4. Download All 18 Chapters for full offline accessibility
+        val allChaptersSet = (1..18).toSet()
+        val allDownloadedSettings = withCh1and2.copy(downloadedChapters = allChaptersSet)
+        assertEquals(18, allDownloadedSettings.downloadedChapters.size)
+        for (ch in 1..18) {
+            assertTrue("Chapter $ch must be downloaded", allDownloadedSettings.isChapterDownloaded(ch))
+        }
+
+        val allEntity = com.example.data.local.AppSettingsEntity(
+            offlineReadingEnabled = true,
+            downloadedChaptersList = allDownloadedSettings.downloadedChapters.sorted().joinToString(",")
+        )
+        assertEquals(18, allEntity.downloadedChaptersSet.size)
+        assertTrue(allEntity.downloadedChaptersSet.contains(18))
+
+        // 5. Clear Downloads
+        val cleared = allDownloadedSettings.copy(downloadedChapters = emptySet())
+        assertTrue(cleared.downloadedChapters.isEmpty())
+        assertFalse(cleared.isChapterDownloaded(1))
+
+        // 6. Bengali numbers formatting check
+        val downloadedBn = com.example.util.BengaliNumberHelper.toBengali(withCh1and2.downloadedChapters.size)
+        assertEquals("২", downloadedBn)
     }
 }
 

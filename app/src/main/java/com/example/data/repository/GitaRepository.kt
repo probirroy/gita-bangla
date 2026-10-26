@@ -22,6 +22,7 @@ import com.example.data.source.GitaContentProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
@@ -680,7 +681,9 @@ class GitaRepository(private val database: AppDatabase) {
                 showSanskrit = entity.showSanskrit,
                 showPronunciation = entity.showPronunciation,
                 showTranslation = entity.showTranslation,
-                showPurport = entity.showPurport
+                showPurport = entity.showPurport,
+                offlineReadingEnabled = entity.offlineReadingEnabled,
+                downloadedChapters = entity.downloadedChaptersSet
             )
         }
     }
@@ -701,10 +704,37 @@ class GitaRepository(private val database: AppDatabase) {
                     showSanskrit = settings.showSanskrit,
                     showPronunciation = settings.showPronunciation,
                     showTranslation = settings.showTranslation,
-                    showPurport = settings.showPurport
+                    showPurport = settings.showPurport,
+                    offlineReadingEnabled = settings.offlineReadingEnabled,
+                    downloadedChaptersList = settings.downloadedChapters.sorted().joinToString(",")
                 )
             )
         }
+    }
+
+    suspend fun toggleOfflineReading(enabled: Boolean) {
+        val current = userSettings.first()
+        updateSettings(current.copy(offlineReadingEnabled = enabled))
+    }
+
+    suspend fun toggleChapterDownload(chapterNumber: Int) {
+        val current = userSettings.first()
+        val updated = if (current.downloadedChapters.contains(chapterNumber)) {
+            current.downloadedChapters - chapterNumber
+        } else {
+            current.downloadedChapters + chapterNumber
+        }
+        updateSettings(current.copy(downloadedChapters = updated, offlineReadingEnabled = true))
+    }
+
+    suspend fun downloadAllChapters() {
+        val current = userSettings.first()
+        updateSettings(current.copy(downloadedChapters = (1..18).toSet(), offlineReadingEnabled = true))
+    }
+
+    suspend fun clearDownloadedChapters() {
+        val current = userSettings.first()
+        updateSettings(current.copy(downloadedChapters = emptySet<Int>()))
     }
 
     // --- Data Sync (Export / Import Backup JSON) ---

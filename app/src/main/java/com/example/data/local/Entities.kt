@@ -83,8 +83,13 @@ data class AppSettingsEntity(
     val showSanskrit: Boolean = true,
     val showPronunciation: Boolean = true,
     val showTranslation: Boolean = true,
-    val showPurport: Boolean = true
-)
+    val showPurport: Boolean = true,
+    val offlineReadingEnabled: Boolean = false,
+    val downloadedChaptersList: String = ""
+) {
+    val downloadedChaptersSet: Set<Int>
+        get() = if (downloadedChaptersList.isBlank()) emptySet() else downloadedChaptersList.split(",").mapNotNull { it.trim().toIntOrNull() }.toSet()
+}
 
 @Entity(tableName = "chapter_progress")
 data class ChapterProgressEntity(

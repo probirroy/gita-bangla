@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.source.GitaContentProvider
+import com.example.ui.components.VerseCardAudioPlayer
 import com.example.ui.viewmodel.GitaViewModel
 import com.example.util.HapticHelper
 import com.example.util.ShareHelper
@@ -163,6 +164,7 @@ fun BookmarksScreen(
                             colors = CardDefaults.cardColors(
                                 containerColor = MaterialTheme.colorScheme.surface
                             ),
+                            border = com.example.ui.theme.blueCardBorder(),
                             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                         ) {
                             Column(modifier = Modifier.padding(16.dp)) {
@@ -239,6 +241,14 @@ fun BookmarksScreen(
                                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     maxLines = 2,
                                     overflow = TextOverflow.Ellipsis
+                                )
+
+                                Spacer(modifier = Modifier.height(10.dp))
+
+                                // Audio Player Component for each verse card
+                                VerseCardAudioPlayer(
+                                    verse = verse,
+                                    audioStateManager = viewModel.audioStateManager
                                 )
                             }
                         }

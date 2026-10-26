@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FastRewind
 import androidx.compose.material.icons.filled.GraphicEq
 import androidx.compose.material.icons.filled.Headphones
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Repeat
@@ -171,10 +173,7 @@ fun VerseAudioPlayer(
             .testTag("audio_player_component"),
         shape = RoundedCornerShape(18.dp),
         colors = CardDefaults.cardColors(containerColor = containerBg),
-        border = BorderStroke(
-            width = if (isThisVersePlaying) 1.5.dp else 1.dp,
-            color = if (isThisVersePlaying) SaffronPrimary.copy(alpha = 0.6f) else MaterialTheme.colorScheme.outline.copy(alpha = 0.15f)
-        ),
+        border = com.example.ui.theme.blueCardBorder(),
         elevation = CardDefaults.cardElevation(defaultElevation = if (isThisVersePlaying) 4.dp else 2.dp)
     ) {
         Column(
@@ -499,3 +498,327 @@ fun VerseAudioPlayer(
         }
     }
 }
+
+/**
+ * Dedicated VerseCardAudioPlayer component embedded into each verse card.
+ * Enables users to listen to the recitation of the selected Bhagavad Gita verse,
+ * scrub via seekbar, toggle playback modes (শ্লোক / বঙ্গানুবাদ / উভয়ই), rewind/forward 5s,
+ * and view live animated audio waveforms.
+ */
+@Composable
+fun VerseCardAudioPlayer(
+    verse: Verse,
+    audioStateManager: AudioStateManager,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val playbackState by audioStateManager.playbackState.collectAsState()
+    val playingVerseId by audioStateManager.currentPlayingVerseId.collectAsState()
+    val currentPosition by audioStateManager.currentPositionSeconds.collectAsState()
+    val duration by audioStateManager.durationSeconds.collectAsState()
+    val recitationMode by audioStateManager.recitationMode.collectAsState()
+    val isLooping by audioStateManager.isLooping.collectAsState()
+
+    val isThisVersePlaying = playingVerseId == verse.verseId && playbackState == PlaybackState.PLAYING
+    val isThisVersePaused = playingVerseId == verse.verseId && playbackState == PlaybackState.PAUSED
+    val isThisVerseActive = playingVerseId == verse.verseId && playbackState != PlaybackState.IDLE
+
+    var isExpandedManually by remember { mutableStateOf(false) }
+    val isExpanded = isThisVerseActive || isExpandedManually
+
+    val audioFile = remember(verse) { audioStateManager.getAudioFileForVerse(verse) }
+
+    var isUserSeeking by remember { mutableStateOf(false) }
+    var userSeekPos by remember { mutableFloatStateOf(0f) }
+
+    val effectivePosition = if (isUserSeeking) userSeekPos else (if (isThisVerseActive) currentPosition else 0f)
+    val effectiveDuration = if (isThisVerseActive) duration.coerceAtLeast(1f) else audioFile.estimatedDurationSeconds
+    val sliderValue = (effectivePosition / effectiveDuration).coerceIn(0f, 1f)
+
+    Surface(
+        modifier = modifier
+            .fillMaxWidth()
+            .testTag("verse_card_audio_player_${verse.verseId}")
+            .testTag("verse_card_audio_player"),
+        shape = RoundedCornerShape(14.dp),
+        color = if (isThisVersePlaying) {
+            SaffronPrimary.copy(alpha = 0.08f)
+        } else if (isThisVersePaused) {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.55f)
+        } else {
+            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f)
+        },
+        border = com.example.ui.theme.blueCardBorder(width = if (isThisVersePlaying) 1.5.dp else 1.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 8.dp)
+        ) {
+            // Header bar: Play/Pause button + Status + Waveform + Expand/Collapse
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.weight(1f)
+                ) {
+                    FilledIconButton(
+                        onClick = {
+                            HapticHelper.performClick(context)
+                            audioStateManager.togglePlayPause(verse)
+                        },
+                        shape = CircleShape,
+                        colors = IconButtonDefaults.filledIconButtonColors(
+                            containerColor = if (isThisVersePlaying) SaffronPrimary else MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White
+                        ),
+                        modifier = Modifier
+                            .size(38.dp)
+                            .testTag("card_play_audio_${verse.verseId}")
+                            .testTag("verse_card_play_button_${verse.verseId}")
+                    ) {
+                        Icon(
+                            imageVector = if (isThisVersePlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
+                            contentDescription = if (isThisVersePlaying) "আবৃত্তি থামান" else "আবৃত্তি শুনুন",
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    Column {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = when {
+                                    isThisVersePlaying -> "আবৃত্তি চলছে..."
+                                    isThisVersePaused -> "আবৃত্তি স্থগিত"
+                                    else -> "শ্লোক আবৃত্তি শুনুন"
+                                },
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = if (isThisVersePlaying) SaffronPrimary else MaterialTheme.colorScheme.onSurface
+                            )
+                            if (isThisVersePlaying) {
+                                Spacer(modifier = Modifier.width(6.dp))
+                                VerseAudioWaveform(isPlaying = true)
+                            }
+                        }
+                        Text(
+                            text = if (isThisVerseActive) {
+                                "${formatAudioTime(effectivePosition)} / ${formatAudioTime(effectiveDuration)}"
+                            } else {
+                                "সময়সীমা: ${formatAudioTime(audioFile.estimatedDurationSeconds)}"
+                            },
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Mode quick indicator
+                    Surface(
+                        shape = RoundedCornerShape(6.dp),
+                        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+                        modifier = Modifier.padding(end = 4.dp)
+                    ) {
+                        Text(
+                            text = when (recitationMode) {
+                                RecitationMode.SHLOKA_ONLY -> "শ্লোক"
+                                RecitationMode.TRANSLATION_ONLY -> "অনুবাদ"
+                                RecitationMode.BOTH -> "উভয়ই"
+                            },
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            HapticHelper.performClick(context)
+                            isExpandedManually = !isExpandedManually
+                        },
+                        modifier = Modifier
+                            .size(32.dp)
+                            .testTag("toggle_expand_audio_${verse.verseId}")
+                    ) {
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                            contentDescription = if (isExpanded) "প্লেয়ার সংকোচন করুন" else "প্লেয়ার বিস্তারিত দেখুন",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+
+            // Expanded / Active Controls: Seek slider, Rewind/Forward, Stop, Mode Selector
+            AnimatedVisibility(visible = isExpanded) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 8.dp)
+                ) {
+                    // Seek Slider
+                    Slider(
+                        value = sliderValue,
+                        onValueChange = { fraction ->
+                            isUserSeeking = true
+                            userSeekPos = fraction * effectiveDuration
+                        },
+                        onValueChangeFinished = {
+                            isUserSeeking = false
+                            audioStateManager.seekTo(userSeekPos)
+                        },
+                        colors = SliderDefaults.colors(
+                            thumbColor = SaffronPrimary,
+                            activeTrackColor = SaffronPrimary,
+                            inactiveTrackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(28.dp)
+                            .testTag("seek_slider_${verse.verseId}")
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = formatAudioTime(effectivePosition),
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Text(
+                            text = formatAudioTime(effectiveDuration),
+                            fontSize = 10.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // Control buttons
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Loop toggle
+                        IconButton(
+                            onClick = {
+                                HapticHelper.performClick(context)
+                                audioStateManager.toggleLoop()
+                            },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("loop_audio_${verse.verseId}")
+                        ) {
+                            Icon(
+                                imageVector = if (isLooping) Icons.Default.RepeatOne else Icons.Default.Repeat,
+                                contentDescription = "পুনরাবৃত্তি",
+                                tint = if (isLooping) SaffronPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        // Rewind 5s
+                        IconButton(
+                            onClick = {
+                                HapticHelper.performClick(context)
+                                audioStateManager.seekBy(-5f)
+                            },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("rewind_5s_${verse.verseId}")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FastRewind,
+                                contentDescription = "৫ সেকেন্ড পেছনে",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        // Stop
+                        IconButton(
+                            onClick = {
+                                HapticHelper.performClick(context)
+                                audioStateManager.stop()
+                            },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("stop_audio_${verse.verseId}")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Stop,
+                                contentDescription = "বন্ধ করুন",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        // Fast Forward 5s
+                        IconButton(
+                            onClick = {
+                                HapticHelper.performClick(context)
+                                audioStateManager.seekBy(5f)
+                            },
+                            modifier = Modifier
+                                .size(34.dp)
+                                .testTag("forward_5s_${verse.verseId}")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.FastForward,
+                                contentDescription = "৫ সেকেন্ড সামনে",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    // Mode Selector Chips
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        val modes = listOf(
+                            RecitationMode.SHLOKA_ONLY to "শ্লোক",
+                            RecitationMode.TRANSLATION_ONLY to "অনুবাদ",
+                            RecitationMode.BOTH to "উভয়ই"
+                        )
+                        modes.forEach { (mode, label) ->
+                            FilterChip(
+                                selected = recitationMode == mode,
+                                onClick = {
+                                    HapticHelper.performClick(context)
+                                    audioStateManager.setRecitationMode(mode)
+                                    if (isThisVersePlaying) audioStateManager.play(verse, mode)
+                                },
+                                label = { Text(label, fontSize = 10.sp) },
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = SaffronPrimary,
+                                    selectedLabelColor = Color.White
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(32.dp)
+                                    .testTag("mode_${mode.name.lowercase()}_${verse.verseId}")
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

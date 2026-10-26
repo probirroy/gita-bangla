@@ -141,13 +141,7 @@ fun VerseJournalComponent(
             else
                 MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(
-            width = 1.dp,
-            color = if (currentNote != null && currentNote.noteText.isNotBlank())
-                SaffronPrimary.copy(alpha = 0.3f)
-            else
-                MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.4f)
-        ),
+        border = com.example.ui.theme.blueCardBorder(),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column(modifier = Modifier.padding(18.dp)) {
@@ -467,7 +461,7 @@ fun VerseJournalComponent(
                     Surface(
                         shape = RoundedCornerShape(14.dp),
                         color = MaterialTheme.colorScheme.surface,
-                        border = BorderStroke(1.dp, SaffronPrimary.copy(alpha = 0.25f)),
+                        border = com.example.ui.theme.blueCardBorder(),
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {

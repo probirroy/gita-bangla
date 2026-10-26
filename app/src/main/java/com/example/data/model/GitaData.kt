@@ -50,8 +50,13 @@ data class UserReadingSettings(
     val showSanskrit: Boolean = true,
     val showPronunciation: Boolean = true,
     val showTranslation: Boolean = true,
-    val showPurport: Boolean = true
-)
+    val showPurport: Boolean = true,
+    val offlineReadingEnabled: Boolean = false,
+    val downloadedChapters: Set<Int> = emptySet()
+) {
+    fun isChapterDownloaded(chapterNumber: Int): Boolean =
+        offlineReadingEnabled && downloadedChapters.contains(chapterNumber)
+}
 
 data class BackupData(
     val version: Int = 1,

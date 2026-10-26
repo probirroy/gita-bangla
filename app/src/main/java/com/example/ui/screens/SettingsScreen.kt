@@ -20,12 +20,19 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.CloudUpload
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.EmojiEvents
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FormatSize
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.Notifications
@@ -77,6 +84,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.ui.viewmodel.AppScreen
 import com.example.ui.viewmodel.GitaViewModel
+import com.example.util.BengaliNumberHelper
 import com.example.util.HapticHelper
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -153,7 +161,9 @@ fun SettingsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -208,6 +218,7 @@ fun SettingsScreen(
                         .testTag("font_size_settings_card"),
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = com.example.ui.theme.blueCardBorder(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -275,57 +286,106 @@ fun SettingsScreen(
 
                         Spacer(modifier = Modifier.height(14.dp))
 
-                        // --- PRIMARY / MASTER FONT SIZE ADJUSTMENT SLIDER ---
+                        // --- DEDICATED VERSE TEXT FONT SIZE ADJUSTMENT SLIDER ---
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "সামগ্রিক ফন্ট সাইজ (Reading Font Size):",
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
+                            Column {
+                                Text(
+                                    text = "শ্লোক পাঠের ফন্ট সাইজ (Verse Text Size):",
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "গীতার মূল শ্লোক ও বঙ্গানুবাদ পাঠের স্পষ্টতা বাড়ান",
+                                    fontSize = 11.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
                             Surface(
                                 color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = RoundedCornerShape(6.dp)
+                                shape = RoundedCornerShape(8.dp)
                             ) {
-                                Text(
-                                    text = "${settings.translationFontSize.toInt()} sp",
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                )
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    val sizeLabel = when {
+                                        settings.shlokaFontSize <= 16f -> "ছোট"
+                                        settings.shlokaFontSize <= 20f -> "স্বাভাবিক"
+                                        settings.shlokaFontSize <= 25f -> "বড়"
+                                        else -> "খুব বড়"
+                                    }
+                                    Text(
+                                        text = "${com.example.util.BengaliNumberHelper.toBengali(settings.shlokaFontSize.toInt())} sp",
+                                        fontSize = 11.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                    Text(
+                                        text = "• $sizeLabel",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                                    )
+                                }
                             }
                         }
 
-                        // Master Font Size Slider
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        // Visual indicator range: small 'A' to large 'A'
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "ছোট ক (${com.example.util.BengaliNumberHelper.toBengali(14)} sp)",
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "বড় ক (${com.example.util.BengaliNumberHelper.toBengali(32)} sp)",
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        // Verse Font Size Slider
                         Slider(
-                            value = settings.translationFontSize,
-                            onValueChange = { newTransSize ->
-                                val scale = newTransSize / 16f
-                                val newShloka = (19f * scale).coerceIn(14f, 32f)
-                                val newPurport = (15f * scale).coerceIn(11f, 26f)
+                            value = settings.shlokaFontSize,
+                            onValueChange = { newShlokaSize ->
+                                val scale = newShlokaSize / 19f
+                                val newTrans = (16f * scale).coerceIn(12f, 26f)
+                                val newPurport = (15f * scale).coerceIn(11f, 24f)
                                 viewModel.updateReadingSettings(
                                     settings.copy(
-                                        translationFontSize = newTransSize,
-                                        shlokaFontSize = newShloka,
+                                        shlokaFontSize = newShlokaSize,
+                                        translationFontSize = newTrans,
                                         purportFontSize = newPurport
                                     )
                                 )
                             },
-                            valueRange = 12f..24f,
-                            steps = 11,
+                            valueRange = 14f..32f,
+                            steps = 17,
                             colors = SliderDefaults.colors(
                                 thumbColor = MaterialTheme.colorScheme.primary,
                                 activeTrackColor = MaterialTheme.colorScheme.primary
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .testTag("verse_font_size_slider")
                                 .testTag("font_size_adjustment_slider")
                                 .testTag("font_size_slider")
+                                .testTag("shloka_font_size_slider")
                         )
 
                         // Quick Preset Chips (Small, Default, Large, Extra Large)
@@ -334,24 +394,24 @@ fun SettingsScreen(
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             val presets = listOf(
-                                Triple("ছোট (14sp)", 14f, "font_size_preset_small"),
-                                Triple("স্বাভাবিক (16sp)", 16f, "font_size_preset_default"),
-                                Triple("বড় (19sp)", 19f, "font_size_preset_large"),
-                                Triple("খুব বড় (22sp)", 22f, "font_size_preset_extra_large")
+                                Triple("ছোট (${com.example.util.BengaliNumberHelper.toBengali(16)} sp)", 16f, "font_size_preset_small"),
+                                Triple("স্বাভাবিক (${com.example.util.BengaliNumberHelper.toBengali(19)} sp)", 19f, "font_size_preset_default"),
+                                Triple("বড় (${com.example.util.BengaliNumberHelper.toBengali(23)} sp)", 23f, "font_size_preset_large"),
+                                Triple("খুব বড় (${com.example.util.BengaliNumberHelper.toBengali(27)} sp)", 27f, "font_size_preset_extra_large")
                             )
 
-                            presets.forEach { (label, transSize, tag) ->
-                                val isSelected = settings.translationFontSize.toInt() == transSize.toInt()
+                            presets.forEach { (label, shlokaSize, tag) ->
+                                val isSelected = settings.shlokaFontSize.toInt() == shlokaSize.toInt()
                                 FilterChip(
                                     selected = isSelected,
                                     onClick = {
                                         HapticHelper.performClick(null)
-                                        val scale = transSize / 16f
+                                        val scale = shlokaSize / 19f
                                         viewModel.updateReadingSettings(
                                             settings.copy(
-                                                translationFontSize = transSize,
-                                                shlokaFontSize = (19f * scale).coerceIn(14f, 32f),
-                                                purportFontSize = (15f * scale).coerceIn(11f, 26f)
+                                                shlokaFontSize = shlokaSize,
+                                                translationFontSize = (16f * scale).coerceIn(12f, 26f),
+                                                purportFontSize = (15f * scale).coerceIn(11f, 24f)
                                             )
                                         )
                                     },
@@ -453,14 +513,17 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.height(10.dp))
 
                         // --- LIVE READING PREVIEW CARD ---
-                        Surface(
-                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        Card(
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            ),
                             shape = RoundedCornerShape(14.dp),
-                            border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.2f)),
+                            border = com.example.ui.theme.blueCardBorder(width = 1.dp),
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .testTag("font_size_preview_card")
                                 .testTag("font_size_preview_box")
+                                .testTag("verse_text_preview")
                         ) {
                             Column(modifier = Modifier.padding(14.dp)) {
                                 Row(
@@ -468,20 +531,30 @@ fun SettingsScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text(
-                                        text = "পাঠের পূর্বরূপ:",
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.primary
-                                    )
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = Icons.Default.FormatSize,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "শ্লোক পাঠের সরাসরি পূর্বরূপ:",
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
                                     Text(
                                         text = "অধ্যায় ২, শ্লোক ৪৭",
                                         fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
                                         color = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
 
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
 
                                 // Bangla Shlok Preview
                                 Text(
@@ -522,7 +595,9 @@ fun SettingsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -645,12 +720,412 @@ fun SettingsScreen(
                 }
             }
 
+            // --- OFFLINE CHAPTER DOWNLOADS & ACCESSIBILITY ---
+            item {
+                var isChapterListExpanded by remember { mutableStateOf(true) }
+                var offlineFilterSelection by remember { mutableStateOf(0) } // 0: All 18, 1: Downloaded, 2: Not Downloaded
+
+                val downloadedCount = settings.downloadedChapters.size
+                val totalCount = viewModel.chapters.size
+                val isAllDownloaded = downloadedCount == totalCount && totalCount > 0
+
+                val displayedChapters = when (offlineFilterSelection) {
+                    1 -> viewModel.chapters.filter { settings.downloadedChapters.contains(it.number) }
+                    2 -> viewModel.chapters.filter { !settings.downloadedChapters.contains(it.number) }
+                    else -> viewModel.chapters
+                }
+
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("offline_download_settings_card"),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        // Section Header
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(MaterialTheme.colorScheme.primaryContainer, RoundedCornerShape(8.dp)),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.CloudDownload,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column {
+                                    Text(
+                                        text = "অফলাইন অধ্যায় ডাউনলোড (Offline Reading)",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = "ইন্টারনেট সংযোগ ছাড়াই যেকোনো স্থানে গীতা পাঠের সুবিধা",
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        // Master Toggle for Offline Chapter Reading
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = if (settings.offlineReadingEnabled) {
+                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f)
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            },
+                            border = com.example.ui.theme.blueCardBorder(width = 1.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(horizontal = 14.dp, vertical = 10.dp)
+                                    .fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(modifier = Modifier.weight(1f).padding(end = 8.dp)) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            imageVector = if (settings.offlineReadingEnabled) Icons.Default.CloudDone else Icons.Default.WifiOff,
+                                            contentDescription = null,
+                                            tint = MaterialTheme.colorScheme.primary,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Text(
+                                            text = "অফলাইন পাঠ সক্রিয় করুন",
+                                            fontWeight = FontWeight.Bold,
+                                            fontSize = 13.sp,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                    }
+                                    Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = if (settings.offlineReadingEnabled) {
+                                            "সক্রিয়: সংরক্ষিত অধ্যায়সমূহ নেটওয়ার্ক ছাড়াই সরাসরি উন্মুক্ত থাকবে"
+                                        } else {
+                                            "নিষ্ক্রিয়: নির্দিষ্ট অধ্যায় ডাউনলোড করে অফলাইন পাঠের সুবিধা নিন"
+                                        },
+                                        fontSize = 11.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                Switch(
+                                    checked = settings.offlineReadingEnabled,
+                                    onCheckedChange = { enabled ->
+                                        HapticHelper.performClick(null)
+                                        viewModel.toggleOfflineReading(enabled)
+                                        if (enabled && settings.downloadedChapters.isEmpty()) {
+                                            viewModel.toggleChapterDownload(1)
+                                            viewModel.toggleChapterDownload(2)
+                                        }
+                                        Toast.makeText(
+                                            context,
+                                            if (enabled) "অফলাইন পাঠ মোড সক্রিয় হয়েছে" else "অফলাইন পাঠ মোড নিষ্ক্রিয় করা হয়েছে",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    },
+                                    modifier = Modifier
+                                        .testTag("offline_reading_toggle")
+                                        .testTag("offline_chapters_toggle")
+                                )
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Offline Storage Status & Progress Bar
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                            border = com.example.ui.theme.blueCardBorder(width = 1.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .testTag("offline_storage_badge")
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = "অফলাইন সংরক্ষণ স্থিতি:",
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Surface(
+                                        shape = RoundedCornerShape(6.dp),
+                                        color = if (downloadedCount > 0) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
+                                    ) {
+                                        Text(
+                                            text = "${BengaliNumberHelper.toBengali(downloadedCount)} / ১৮টি অধ্যায় সংরক্ষিত",
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            color = if (downloadedCount > 0) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                }
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                val downloadRatio = if (totalCount > 0) downloadedCount.toFloat() / totalCount.toFloat() else 0f
+                                LinearProgressIndicator(
+                                    progress = { downloadRatio },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(6.dp)
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .testTag("offline_download_progress_bar"),
+                                    color = if (isAllDownloaded) Color(0xFF2E7D32) else MaterialTheme.colorScheme.primary,
+                                    trackColor = MaterialTheme.colorScheme.surfaceVariant
+                                )
+
+                                Spacer(modifier = Modifier.height(6.dp))
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = if (isAllDownloaded) "সম্পূর্ণ ১৮টি অধ্যায় অফলাইনে প্রস্তুত ✓" else "${BengaliNumberHelper.toBengali(18 - downloadedCount)}টি অধ্যায় ডাউনলোড করা বাকি",
+                                        fontSize = 10.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                    Text(
+                                        text = "${(downloadRatio * 100).toInt()}% সমাপ্ত",
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Quick Actions: Download All or Clear All
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    HapticHelper.performSuccess(context)
+                                    viewModel.downloadAllChapters()
+                                    Toast.makeText(context, "সকল ১৮টি অধ্যায় অফলাইনে সংরক্ষিত হয়েছে", Toast.LENGTH_SHORT).show()
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .testTag("download_all_chapters_button")
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.CloudDownload,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
+                                Text("সকল অধ্যায় ডাউনলোড", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+
+                            OutlinedButton(
+                                onClick = {
+                                    HapticHelper.performClick(null)
+                                    viewModel.clearDownloadedChapters()
+                                    Toast.makeText(context, "অফলাইন সংরক্ষণ খালি করা হয়েছে", Toast.LENGTH_SHORT).show()
+                                },
+                                shape = RoundedCornerShape(10.dp),
+                                modifier = Modifier
+                                    .weight(0.9f)
+                                    .testTag("clear_offline_chapters_button")
+                            ) {
+                                Text("সংরক্ষণ মুছুন", fontSize = 11.sp)
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(12.dp))
+
+                        // Filter Chips for Chapters List (All, Downloaded, Pending)
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            FilterChip(
+                                selected = offlineFilterSelection == 0,
+                                onClick = { offlineFilterSelection = 0 },
+                                label = { Text("সকল ১৮", fontSize = 10.sp) },
+                                modifier = Modifier.testTag("offline_filter_all")
+                            )
+                            FilterChip(
+                                selected = offlineFilterSelection == 1,
+                                onClick = { offlineFilterSelection = 1 },
+                                label = { Text("ডাউনলোডকৃত (${BengaliNumberHelper.toBengali(downloadedCount)})", fontSize = 10.sp) },
+                                modifier = Modifier.testTag("offline_filter_downloaded")
+                            )
+                            FilterChip(
+                                selected = offlineFilterSelection == 2,
+                                onClick = { offlineFilterSelection = 2 },
+                                label = { Text("বাকি (${BengaliNumberHelper.toBengali(totalCount - downloadedCount)})", fontSize = 10.sp) },
+                                modifier = Modifier.testTag("offline_filter_pending")
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(10.dp))
+
+                        // Individual Chapter Download Toggles Header & Accordion
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable { isChapterListExpanded = !isChapterListExpanded }
+                                .padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "নির্দিষ্ট অধ্যায় ডাউনলোড তালিকা (${BengaliNumberHelper.toBengali(displayedChapters.size)}টি):",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                            Icon(
+                                imageVector = if (isChapterListExpanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(20.dp)
+                            )
+                        }
+
+                        if (isChapterListExpanded) {
+                            Spacer(modifier = Modifier.height(6.dp))
+
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                displayedChapters.forEach { chapter ->
+                                    val isDownloaded = settings.downloadedChapters.contains(chapter.number)
+
+                                    Surface(
+                                        shape = RoundedCornerShape(12.dp),
+                                        color = if (isDownloaded) {
+                                            MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.35f)
+                                        } else {
+                                            MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                                        },
+                                        border = com.example.ui.theme.blueCardBorder(width = 1.dp),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .testTag("offline_chapter_card_${chapter.number}")
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .padding(horizontal = 12.dp, vertical = 10.dp)
+                                                .fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Row(
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                modifier = Modifier.weight(1f).padding(end = 8.dp)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(32.dp)
+                                                        .clip(CircleShape)
+                                                        .background(
+                                                            if (isDownloaded) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
+                                                        ),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = BengaliNumberHelper.toBengali(chapter.number),
+                                                        fontSize = 12.sp,
+                                                        fontWeight = FontWeight.Bold,
+                                                        color = if (isDownloaded) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurfaceVariant
+                                                    )
+                                                }
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                Column {
+                                                    Text(
+                                                        text = "অধ্যায় ${BengaliNumberHelper.toBengali(chapter.number)}: ${chapter.nameBengali}",
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontSize = 12.sp,
+                                                        color = MaterialTheme.colorScheme.onSurface
+                                                    )
+                                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                                        Text(
+                                                            text = "${BengaliNumberHelper.toBengali(chapter.verseCount)}টি শ্লোক",
+                                                            fontSize = 10.sp,
+                                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                        )
+                                                        Spacer(modifier = Modifier.width(4.dp))
+                                                        Text(
+                                                            text = "•",
+                                                            fontSize = 10.sp,
+                                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                        )
+                                                        Spacer(modifier = Modifier.width(4.dp))
+                                                        Text(
+                                                            text = if (isDownloaded) "অফলাইন প্রস্তুত ✓" else "ডাউনলোড প্রয়োজন",
+                                                            fontSize = 10.sp,
+                                                            fontWeight = if (isDownloaded) FontWeight.Bold else FontWeight.Normal,
+                                                            color = if (isDownloaded) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurfaceVariant
+                                                        )
+                                                    }
+                                                }
+                                            }
+
+                                            // Toggle switch for specific chapter
+                                            Switch(
+                                                checked = isDownloaded,
+                                                onCheckedChange = {
+                                                    HapticHelper.performClick(null)
+                                                    viewModel.toggleChapterDownload(chapter.number)
+                                                },
+                                                modifier = Modifier
+                                                    .testTag("offline_chapter_toggle_${chapter.number}")
+                                                    .testTag("offline_chapter_switch_${chapter.number}")
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Haptics & Mindfulness Notifications
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -810,7 +1285,9 @@ fun SettingsScreen(
                         .fillMaxWidth()
                         .testTag("settings_daily_goals_card"),
                     shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -916,7 +1393,9 @@ fun SettingsScreen(
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Row(verticalAlignment = Alignment.CenterVertically) {

@@ -151,7 +151,7 @@ fun VerseShareDialog(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f)
                     ),
-                    border = BorderStroke(1.dp, GoldAccent.copy(alpha = 0.4f))
+                    border = com.example.ui.theme.blueCardBorder()
                 ) {
                     Column(
                         modifier = Modifier
@@ -281,10 +281,7 @@ private fun ShareOptionCard(
         colors = CardDefaults.outlinedCardColors(
             containerColor = if (isRecommended) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface
         ),
-        border = BorderStroke(
-            width = if (isRecommended) 1.5.dp else 1.dp,
-            color = if (isRecommended) SaffronPrimary else MaterialTheme.colorScheme.outline.copy(alpha = 0.25f)
-        )
+        border = com.example.ui.theme.blueCardBorder()
     ) {
         Row(
             modifier = Modifier

@@ -52,7 +52,7 @@ data class NoteEditorState(
 
 class GitaViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val repository: GitaRepository
+    val repository: GitaRepository
     val audioPlayer: GitaAudioPlayer = GitaAudioPlayer(application)
     val audioStateManager: VerseAudioStateManager = VerseAudioStateManager(audioPlayer)
 
@@ -415,6 +415,10 @@ class GitaViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Search operations
+    fun searchVerses(query: String): List<Verse> {
+        return repository.searchVerses(query)
+    }
+
     fun onSearchQueryChanged(query: String) {
         _searchQuery.value = query
         if (query.isBlank()) {
@@ -430,6 +434,35 @@ class GitaViewModel(application: Application) : AndroidViewModel(application) {
             repository.updateSettings(newSettings)
             audioPlayer.speechRate = newSettings.recitationSpeed
         }
+    }
+
+    fun toggleOfflineReading(enabled: Boolean) {
+        viewModelScope.launch {
+            repository.toggleOfflineReading(enabled)
+        }
+    }
+
+    fun toggleChapterDownload(chapterNumber: Int) {
+        viewModelScope.launch {
+            repository.toggleChapterDownload(chapterNumber)
+        }
+    }
+
+    fun downloadAllChapters() {
+        viewModelScope.launch {
+            repository.downloadAllChapters()
+        }
+    }
+
+    fun clearDownloadedChapters() {
+        viewModelScope.launch {
+            repository.clearDownloadedChapters()
+        }
+    }
+
+    fun isChapterDownloaded(chapterNumber: Int): Boolean {
+        val current = userSettings.value
+        return current.offlineReadingEnabled && current.downloadedChapters.contains(chapterNumber)
     }
 
     // Audio operations

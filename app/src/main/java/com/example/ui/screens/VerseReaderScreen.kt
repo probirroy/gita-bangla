@@ -89,6 +89,7 @@ import com.example.ui.components.GitaAudioPlayerCard
 import com.example.ui.components.MediaPlaybackController
 import com.example.ui.components.VerseAudioPlayer
 import com.example.ui.components.VerseJournalComponent
+import com.example.ui.theme.blueCardBorder
 import com.example.ui.viewmodel.AppScreen
 import com.example.ui.viewmodel.GitaViewModel
 import com.example.util.HapticHelper
@@ -226,17 +227,22 @@ fun VerseReaderScreen(
                 label = "chapter_progress_animation"
             )
 
-            Surface(
+            Card(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp)
                     .testTag("chapter_progress_indicator"),
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 2.dp
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                border = blueCardBorder(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp, vertical = 10.dp)
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -380,12 +386,13 @@ fun VerseReaderScreen(
 
                 // Bangla Shlok (বাংলা শ্লোক)
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag("shloka_card"),
                     shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
                     ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                    border = blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(
                         modifier = Modifier
@@ -444,11 +451,13 @@ fun VerseReaderScreen(
                 // Bengali Translation (বঙ্গানুবাদ)
                 if (settings.showTranslation) {
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("translation_card"),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f)
-                        )
+                        ),
+                        border = blueCardBorder(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(18.dp)) {
                             Row(
@@ -523,12 +532,13 @@ fun VerseReaderScreen(
                 // Bengali Purport (তাৎপর্য ও আধ্যাত্মিক ব্যাখ্যা)
                 if (settings.showPurport) {
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().testTag("purport_card"),
                         shape = RoundedCornerShape(16.dp),
                         colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surface
                         ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
+                        border = blueCardBorder(),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                     ) {
                         Column(modifier = Modifier.padding(18.dp)) {
                             Text(
@@ -570,10 +580,14 @@ fun VerseReaderScreen(
             }
 
             // Bottom Navigation Controls: Previous / Next Verse
-            Surface(
-                color = MaterialTheme.colorScheme.surface,
-                tonalElevation = 6.dp,
-                modifier = Modifier.fillMaxWidth()
+            Card(
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                shape = RoundedCornerShape(topStart = 18.dp, topEnd = 18.dp),
+                border = blueCardBorder(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("verse_reader_bottom_bar")
             ) {
                 Row(
                     modifier = Modifier

@@ -27,6 +27,8 @@ import androidx.compose.material.icons.filled.Bookmark
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.CheckCircleOutline
+import androidx.compose.material.icons.filled.CloudDone
+import androidx.compose.material.icons.filled.CloudDownload
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RestartAlt
@@ -62,6 +64,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.audio.PlaybackState
+import com.example.ui.components.VerseCardAudioPlayer
 import com.example.ui.viewmodel.AppScreen
 import com.example.ui.viewmodel.GitaViewModel
 import com.example.util.HapticHelper
@@ -84,6 +87,7 @@ fun ChapterDetailScreen(
     val readVersesSet = chapterProgress?.readVersesSet ?: emptySet()
     val playbackState by viewModel.audioPlayer.playbackState.collectAsState()
     val playingVerseId by viewModel.audioPlayer.currentPlayingVerseId.collectAsState()
+    val settings by viewModel.userSettings.collectAsState()
     val context = LocalContext.current
 
     BackHandler {
@@ -116,6 +120,22 @@ fun ChapterDetailScreen(
                         )
                     }
                 },
+                actions = {
+                    val isDownloaded = settings.isChapterDownloaded(chapter.number)
+                    IconButton(
+                        onClick = {
+                            HapticHelper.performClick(null)
+                            viewModel.toggleChapterDownload(chapter.number)
+                        },
+                        modifier = Modifier.testTag("chapter_detail_offline_toggle")
+                    ) {
+                        Icon(
+                            imageVector = if (isDownloaded) Icons.Default.CloudDone else Icons.Default.CloudDownload,
+                            contentDescription = if (isDownloaded) "অফলাইনে সংরক্ষিত" else "অফলাইনে ডাউনলোড করুন",
+                            tint = if (isDownloaded) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
                     containerColor = MaterialTheme.colorScheme.surface
                 )
@@ -136,7 +156,9 @@ fun ChapterDetailScreen(
                     shape = RoundedCornerShape(18.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer
-                    )
+                    ),
+                    border = com.example.ui.theme.blueCardBorder(),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(18.dp)) {
                         Row(
@@ -187,6 +209,7 @@ fun ChapterDetailScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surface
                     ),
+                    border = com.example.ui.theme.blueCardBorder(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
@@ -330,142 +353,137 @@ fun ChapterDetailScreen(
                     colors = CardDefaults.cardColors(
                         containerColor = if (isVerseRead) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.25f) else MaterialTheme.colorScheme.surface
                     ),
+                    border = com.example.ui.theme.blueCardBorder(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
                 ) {
-                    Row(
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(14.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(36.dp)
-                                .clip(CircleShape)
-                                .background(
-                                    if (isVerseRead) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
-                                ),
-                            contentAlignment = Alignment.Center
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (isVerseRead) {
-                                Icon(
-                                    imageVector = Icons.Default.Check,
-                                    contentDescription = "পঠিত",
-                                    tint = Color(0xFF2E7D32),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            } else {
-                                Text(
-                                    text = "${verse.verseNumber}",
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        }
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Column(modifier = Modifier.weight(1f)) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(
-                                    text = verse.pronunciationBengali.lines().firstOrNull() ?: "",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    fontWeight = FontWeight.SemiBold,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.weight(1f, fill = false)
-                                )
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .clip(CircleShape)
+                                    .background(
+                                        if (isVerseRead) Color(0xFFE8F5E9) else MaterialTheme.colorScheme.surfaceVariant
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
                                 if (isVerseRead) {
-                                    Spacer(modifier = Modifier.width(6.dp))
-                                    Surface(
-                                        color = Color(0xFFE8F5E9),
-                                        shape = RoundedCornerShape(6.dp)
-                                    ) {
-                                        Text(
-                                            text = "পঠিত",
-                                            fontSize = 9.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = Color(0xFF2E7D32),
-                                            modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = Icons.Default.Check,
+                                        contentDescription = "পঠিত",
+                                        tint = Color(0xFF2E7D32),
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                } else {
+                                    Text(
+                                        text = "${verse.verseNumber}",
+                                        fontWeight = FontWeight.Bold,
+                                        fontSize = 13.sp,
+                                        color = MaterialTheme.colorScheme.primary
+                                    )
                                 }
                             }
-                            Spacer(modifier = Modifier.height(2.dp))
-                            Text(
-                                text = verse.translationBengali,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis
-                            )
+
+                            Spacer(modifier = Modifier.width(12.dp))
+
+                            Column(modifier = Modifier.weight(1f)) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = verse.pronunciationBengali.lines().firstOrNull() ?: "",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        fontWeight = FontWeight.SemiBold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f, fill = false)
+                                    )
+                                    if (isVerseRead) {
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        Surface(
+                                            color = Color(0xFFE8F5E9),
+                                            shape = RoundedCornerShape(6.dp)
+                                        ) {
+                                            Text(
+                                                text = "পঠিত",
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Bold,
+                                                color = Color(0xFF2E7D32),
+                                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = verse.translationBengali,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                // Read Toggle Button
+                                IconButton(
+                                    onClick = {
+                                        HapticHelper.performTick(context)
+                                        viewModel.toggleVerseRead(verse.chapterNumber, verse.verseNumber)
+                                    },
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .testTag("verse_read_toggle_${verse.verseNumber}")
+                                ) {
+                                    Icon(
+                                        imageVector = if (isVerseRead) Icons.Default.CheckCircle else Icons.Default.CheckCircleOutline,
+                                        contentDescription = if (isVerseRead) "অপঠিত করুন" else "পঠিত চিহ্নিত করুন",
+                                        tint = if (isVerseRead) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+
+                                if (isBookmarked) {
+                                    Icon(
+                                        imageVector = Icons.Default.Bookmark,
+                                        contentDescription = "সংরক্ষিত",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                    Spacer(modifier = Modifier.width(2.dp))
+                                }
+
+                                IconButton(
+                                    onClick = {
+                                        HapticHelper.performClick(null)
+                                        viewModel.openShareVerseDialog(verse)
+                                    },
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .testTag("share_verse_${verse.verseNumber}")
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Share,
+                                        contentDescription = "শ্লোক শেয়ার করুন",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
                         }
 
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            // Read Toggle Button
-                            IconButton(
-                                onClick = {
-                                    HapticHelper.performTick(context)
-                                    viewModel.toggleVerseRead(verse.chapterNumber, verse.verseNumber)
-                                },
-                                modifier = Modifier
-                                    .size(34.dp)
-                                    .testTag("verse_read_toggle_${verse.verseNumber}")
-                            ) {
-                                Icon(
-                                    imageVector = if (isVerseRead) Icons.Default.CheckCircle else Icons.Default.CheckCircleOutline,
-                                    contentDescription = if (isVerseRead) "অপঠিত করুন" else "পঠিত চিহ্নিত করুন",
-                                    tint = if (isVerseRead) Color(0xFF2E7D32) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
+                        Spacer(modifier = Modifier.height(10.dp))
 
-                            val isVersePlaying = playingVerseId == verse.verseId && playbackState == PlaybackState.PLAYING
-                            IconButton(
-                                onClick = {
-                                    HapticHelper.performClick(null)
-                                    viewModel.togglePlayRecitation(verse)
-                                },
-                                modifier = Modifier
-                                    .size(34.dp)
-                                    .testTag("play_verse_audio_${verse.verseNumber}")
-                            ) {
-                                Icon(
-                                    imageVector = if (isVersePlaying) Icons.Default.Pause else Icons.Default.VolumeUp,
-                                    contentDescription = if (isVersePlaying) "আবৃত্তি থামান" else "বাংলা আবৃত্তি শুনুন",
-                                    tint = if (isVersePlaying) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.75f),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-
-                            if (isBookmarked) {
-                                Icon(
-                                    imageVector = Icons.Default.Bookmark,
-                                    contentDescription = "সংরক্ষিত",
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                                Spacer(modifier = Modifier.width(2.dp))
-                            }
-
-                            IconButton(
-                                onClick = {
-                                    HapticHelper.performClick(null)
-                                    viewModel.openShareVerseDialog(verse)
-                                },
-                                modifier = Modifier
-                                    .size(34.dp)
-                                    .testTag("share_verse_${verse.verseNumber}")
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Share,
-                                    contentDescription = "শ্লোক শেয়ার করুন",
-                                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        }
+                        // Dedicated Audio Player Component for each verse card
+                        VerseCardAudioPlayer(
+                            verse = verse,
+                            audioStateManager = viewModel.audioStateManager
+                        )
                     }
                 }
             }
