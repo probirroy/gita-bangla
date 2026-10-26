@@ -37,14 +37,19 @@ object DailyNotificationManager {
     }
 
     /**
-     * Posts a notification featuring a random or specified Bhagavad Gita verse in Bengali.
+     * Posts a morning notification featuring today's curated 'Verse of the Day' (আজকের শ্লোক) in Bengali.
      */
-    fun showRandomVerseNotification(context: Context, verse: Verse = GitaContentProvider.getRandomVerse()) {
+    fun showVerseOfTheDayNotification(
+        context: Context,
+        verse: Verse = com.example.data.source.DailyVerseProvider.getCuratedDailyVerse().verse
+    ) {
         createNotificationChannel(context)
 
+        val curated = com.example.data.source.DailyVerseProvider.getCuratedDailyVerse()
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             putExtra("navigateToVerse", true)
+            putExtra("isVerseOfTheDay", true)
             putExtra("chapterNumber", verse.chapterNumber)
             putExtra("verseNumber", verse.verseNumber)
         }
@@ -55,13 +60,16 @@ object DailyNotificationManager {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val title = "আজকের অমৃত বাণী • অধ্যায় ${verse.chapterNumber}, শ্লোক ${verse.verseNumber}"
-        val summary = verse.translationBengali.take(100) + if (verse.translationBengali.length > 100) "..." else ""
+        val title = "আজকের শ্লোক • অধ্যায় ${verse.chapterNumber}, শ্লোক ${verse.verseNumber}"
+        val summary = if (curated.inspirationQuote.isNotBlank()) curated.inspirationQuote else verse.translationBengali.take(80)
 
         val bigText = buildString {
-            append("শ্লোক:\n॥ ${verse.pronunciationBengali} ॥\n\n")
+            append("॥ ${verse.pronunciationBengali} ॥\n\n")
             append("সরল বঙ্গানুবাদ:\n${verse.translationBengali}\n\n")
-            append("— শ্রীমদ্ভগবদ্গীতা পাঠ ও আত্মচিন্তন")
+            if (curated.dailyWisdomBengali.isNotBlank()) {
+                append("আজকের আত্মচিন্তন:\n${curated.dailyWisdomBengali}\n\n")
+            }
+            append("— শ্রীমদ্ভগবদ্গীতা পাঠ ও প্রাতঃকালীন সাধনা")
         }
 
         val notification = NotificationCompat.Builder(context, CHANNEL_ID)
@@ -69,7 +77,7 @@ object DailyNotificationManager {
             .setContentTitle(title)
             .setContentText(summary)
             .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
             .build()
@@ -83,16 +91,22 @@ object DailyNotificationManager {
     }
 
     /**
-     * Legacy method for day-of-year mapped verse.
+     * Posts a notification featuring a random or specified Bhagavad Gita verse in Bengali.
+     */
+    fun showRandomVerseNotification(context: Context, verse: Verse = GitaContentProvider.getRandomVerse()) {
+        showVerseOfTheDayNotification(context, verse)
+    }
+
+    /**
+     * Method for day-of-year mapped Verse of the Day.
      */
     fun showDailyReflectionNotification(context: Context) {
-        val dailyVerse = com.example.data.source.DailyVerseProvider.getCuratedDailyVerse().verse
-        showRandomVerseNotification(context, dailyVerse)
+        showVerseOfTheDayNotification(context)
     }
 
     /**
      * Schedules a daily recurring WorkManager task to deliver an inspiring
-     * random Bhagavad Gita verse in Bengali at the desired time (default: 7:00 AM).
+     * Bhagavad Gita 'Verse of the Day' in Bengali at the desired morning time (default: 7:00 AM).
      */
     fun scheduleDailyReflectionWork(
         context: Context,

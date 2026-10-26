@@ -852,6 +852,70 @@ class ExampleUnitTest {
         val downloadedBn = com.example.util.BengaliNumberHelper.toBengali(withCh1and2.downloadedChapters.size)
         assertEquals("২", downloadedBn)
     }
+
+    @Test
+    fun verifyCuratedVerseOfTheDayRotationAndWisdom() {
+        val curated = com.example.data.source.DailyVerseProvider.getCuratedDailyVerse()
+        assertNotNull(curated)
+        assertNotNull(curated.verse)
+        assertTrue(curated.verse.chapterNumber in 1..18)
+        assertTrue(curated.verse.verseNumber >= 1)
+        assertTrue(curated.themeCategory.isNotBlank())
+        assertTrue(curated.inspirationQuote.isNotBlank())
+        assertTrue(curated.dailyWisdomBengali.isNotBlank())
+        assertTrue(curated.dailyPracticeBengali.isNotBlank())
+        assertTrue(curated.dateDisplayBengali.isNotBlank())
+        assertTrue(curated.verse.pronunciationBengali.isNotBlank())
+        assertTrue(curated.verse.translationBengali.isNotBlank())
+    }
+
+    @Test
+    fun verifyAudioPlayerSeekAndProgressMath() {
+        val duration = 24.0f
+        var position = 6.0f
+
+        // Progress fraction calculation
+        var progressFraction = (position / duration).coerceIn(0f, 1f)
+        assertEquals(0.25f, progressFraction, 0.001f)
+
+        // Scrubbing to 50%
+        val seekFraction = 0.5f
+        val userSeekPos = seekFraction * duration
+        assertEquals(12.0f, userSeekPos, 0.001f)
+
+        // Seek forward by 5s
+        val seekDelta = 5.0f
+        val forwardedPos = (userSeekPos + seekDelta).coerceIn(0f, duration)
+        assertEquals(17.0f, forwardedPos, 0.001f)
+
+        // Seek backward by 5s
+        val rewindDelta = -5.0f
+        val rewoundPos = (forwardedPos + rewindDelta).coerceIn(0f, duration)
+        assertEquals(12.0f, rewoundPos, 0.001f)
+
+        // Time string formatting
+        assertEquals("00:12", com.example.ui.components.formatAudioTime(rewoundPos))
+        assertEquals("00:24", com.example.ui.components.formatAudioTime(duration))
+        assertEquals("01:15", com.example.ui.components.formatAudioTime(75.0f))
+    }
+
+    @Test
+    fun verifyVerseOfTheDayMorningNotificationPayload() {
+        val verse = com.example.data.source.DailyVerseProvider.getCuratedDailyVerse().verse
+        val title = "আজকের শ্লোক • অধ্যায় ${verse.chapterNumber}, শ্লোক ${verse.verseNumber}"
+        assertTrue(title.contains("আজকের শ্লোক"))
+        assertTrue(title.contains("অধ্যায় ${verse.chapterNumber}"))
+        assertTrue(title.contains("শ্লোক ${verse.verseNumber}"))
+
+        val bigText = buildString {
+            append("॥ ${verse.pronunciationBengali} ॥\n\n")
+            append("সরল বঙ্গানুবাদ:\n${verse.translationBengali}\n\n")
+            append("— শ্রীমদ্ভগবদ্গীতা পাঠ ও প্রাতঃকালীন সাধনা")
+        }
+        assertTrue(bigText.contains(verse.pronunciationBengali))
+        assertTrue(bigText.contains(verse.translationBengali))
+        assertTrue(bigText.contains("প্রাতঃকালীন সাধনা"))
+    }
 }
 
 

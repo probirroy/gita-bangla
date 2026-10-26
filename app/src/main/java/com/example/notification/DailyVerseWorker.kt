@@ -16,10 +16,8 @@ class DailyVerseWorker(
 
     override suspend fun doWork(): Result {
         return try {
-            val randomVerse = GitaContentProvider.getRandomVerse()
-            DailyNotificationManager.showRandomVerseNotification(
-                context = applicationContext,
-                verse = randomVerse
+            DailyNotificationManager.showVerseOfTheDayNotification(
+                context = applicationContext
             )
             Result.success()
         } catch (e: Exception) {

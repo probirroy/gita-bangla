@@ -301,6 +301,9 @@ fun VerseAudioPlayer(
                         .fillMaxWidth()
                         .height(30.dp)
                         .testTag("verse_audio_seek_slider")
+                        .testTag("verse_audio_seek_bar")
+                        .testTag("progress_seek_bar")
+                        .testTag("audio_seek_bar")
                 )
 
                 Row(
@@ -389,6 +392,9 @@ fun VerseAudioPlayer(
                     modifier = Modifier
                         .size(54.dp)
                         .testTag("verse_audio_play_pause_button")
+                        .testTag("play_pause_button")
+                        .testTag("play_daily_verse_audio_button")
+                        .testTag("verse_of_the_day_audio_button")
                         .testTag(if (isThisVersePlaying) "verse_audio_pause_button" else "verse_audio_play_button")
                 ) {
                     Icon(
@@ -579,6 +585,8 @@ fun VerseCardAudioPlayer(
                             .size(38.dp)
                             .testTag("card_play_audio_${verse.verseId}")
                             .testTag("verse_card_play_button_${verse.verseId}")
+                            .testTag("verse_card_play_pause_button")
+                            .testTag("play_pause_button")
                     ) {
                         Icon(
                             imageVector = if (isThisVersePlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
@@ -684,6 +692,8 @@ fun VerseCardAudioPlayer(
                             .fillMaxWidth()
                             .height(28.dp)
                             .testTag("seek_slider_${verse.verseId}")
+                            .testTag("verse_card_seek_bar")
+                            .testTag("progress_seek_bar")
                     )
 
                     Row(

@@ -31,6 +31,7 @@ import androidx.compose.material.icons.filled.EditNote
 import androidx.compose.material.icons.filled.Lightbulb
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.MenuBook
+import androidx.compose.material.icons.filled.NotificationsActive
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.RestartAlt
@@ -632,23 +633,24 @@ fun DailyVerseComponent(
                 }
             }
 
-            Spacer(modifier = Modifier.height(14.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
-            // Expandable Media Playback Controller Component when Audio is Active
-            if (playingVerseId == dailyVerse.verseId && playbackState != PlaybackState.IDLE) {
-                MediaPlaybackController(
-                    verse = dailyVerse,
-                    audioStateManager = viewModel.audioStateManager,
-                    showVerseHeader = false,
-                    showRecitationModes = true,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .testTag("daily_verse_seek_slider")
-                )
-                Spacer(modifier = Modifier.height(12.dp))
-            }
+            // Custom Audio Player UI Component for Daily Verse of the Day
+            VerseAudioPlayer(
+                verse = dailyVerse,
+                audioStateManager = viewModel.audioStateManager,
+                isCompact = false,
+                showVerseInfo = false,
+                showModeSelector = true,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .testTag("daily_verse_audio_player")
+                    .testTag("verse_of_the_day_audio_player")
+            )
 
-            // Action Buttons: Play/Pause Audio & Read Complete Verse
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // Action Buttons: Morning Notification Quick Test & Read Complete Verse
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -656,27 +658,24 @@ fun DailyVerseComponent(
             ) {
                 OutlinedButton(
                     onClick = {
-                        HapticHelper.performClick(null)
-                        viewModel.togglePlayRecitation(dailyVerse)
+                        HapticHelper.performSuccess(context)
+                        viewModel.triggerDailyNotification()
+                        Toast.makeText(context, "আজকের শ্লোক প্রাতঃকালীন নোটিফিকেশন পাঠানো হয়েছে!", Toast.LENGTH_SHORT).show()
                     },
                     shape = RoundedCornerShape(12.dp),
                     border = BorderStroke(1.dp, SaffronPrimary),
                     modifier = Modifier
-                        .testTag("play_daily_verse_audio_button")
-                        .testTag("verse_of_the_day_audio_button")
+                        .testTag("daily_verse_notification_button")
+                        .testTag("verse_of_the_day_notification_button")
                 ) {
                     Icon(
-                        imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                        contentDescription = if (isPlaying) "পজ" else "প্লে",
+                        imageVector = Icons.Default.NotificationsActive,
+                        contentDescription = "প্রাতঃকালীন স্মরণ",
                         tint = SaffronPrimary,
-                        modifier = Modifier.size(18.dp)
+                        modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        text = if (isPlaying) "পজ করুন" else if (playbackState == PlaybackState.PAUSED && playingVerseId == dailyVerse.verseId) "পুনরায় চালান" else "আবৃত্তি শুনুন",
-                        fontSize = 12.sp,
-                        color = SaffronPrimary
-                    )
+                    Text("প্রাতঃকালীন স্মরণ", fontSize = 12.sp, color = SaffronPrimary)
                 }
 
                 Button(
